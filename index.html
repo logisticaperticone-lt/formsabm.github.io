@@ -2017,6 +2017,9 @@ function submitForm() {
     rs_nueva:          document.getElementById('f_rs_nueva')?.value || "",
     rs_contribuyente:  document.querySelector('input[name="rs_contrib"]:checked')?.value || "",
     rs_cuit:           document.getElementById('f_rs_cuit')?.value || "",
+    rs_motivo:         document.querySelector('input[name="rs_motivo"]:checked')?.value === 'otro'
+                         ? (document.getElementById('f_rs_otro')?.value || 'otro')
+                         : (document.querySelector('input[name="rs_motivo"]:checked')?.value || ""),
   };
 
   // Armar resumen visual

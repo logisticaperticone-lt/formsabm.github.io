@@ -1,2067 +1,839 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FORMS CLIENTES GALAXIA</title>
+<title>Seguimiento de Coaching · Promotores de venta</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  :root{
+    --bg:#F1F4EF;
+    --paper:#FFFFFF;
+    --ink:#1B231F;
+    --ink-soft:#5C6862;
+    --ink-faint:#8B958F;
+    --line:#DFE4DC;
+    --line-soft:#EBEEE8;
+    --accent:#2F6F5E;
+    --accent-ink:#173D33;
+    --accent-soft:#E1EDE7;
+    --amber:#C98A2B;
+    --amber-soft:#F6E9D2;
+    --grade-a:#2F6F5E;
+    --grade-a-soft:#E1EDE7;
+    --grade-b:#3E7CA6;
+    --grade-b-soft:#E1EBF1;
+    --grade-c:#C98A2B;
+    --grade-c-soft:#F6E9D2;
+    --grade-d:#B24A3A;
+    --grade-d-soft:#F5E2DE;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(27,35,31,0.06), 0 6px 20px -10px rgba(27,35,31,0.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-family:'IBM Plex Mono','SF Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ---------- shell ---------- */
+  .shell{display:flex; min-height:100vh;}
 
-  :root {
-    --bg: #F5F3EF;
-    --card: #FFFFFF;
-    --accent: #1A1A2E;
-    --accent2: #E63946;
-    --accent3: #2563EB;
-    --text: #1A1A2E;
-    --text2: #6B6B80;
-    --border: #E2E0DA;
-    --input-bg: #FAFAF8;
-    --locked: #F0F0F0;
-    --locked-text: #888;
-    --success: #16A34A;
-    --tag-bg: #EEF2FF;
-    --tag-text: #3730A3;
-    --radius: 10px;
-    --shadow: 0 2px 12px rgba(26,26,46,0.07);
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    width:340px; flex:none; background:var(--paper); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; height:100vh; position:sticky; top:0;
   }
+  .brand{
+    padding:22px 20px 16px; border-bottom:1px solid var(--line-soft);
+  }
+  .brand .cap{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:50%;
+    background:conic-gradient(from 0deg, var(--accent) 0 8%, transparent 8% 16%, var(--accent) 16% 24%, transparent 24% 32%, var(--accent) 32% 40%, transparent 40% 48%, var(--accent) 48% 56%, transparent 56% 64%, var(--accent) 64% 72%, transparent 72% 80%, var(--accent) 80% 88%, transparent 88% 96%);
+    position:relative;
+  }
+  .brand .cap::after{
+    content:''; position:absolute; inset:6px; border-radius:50%; background:var(--paper);
+  }
+  .brand-row{display:flex; align-items:center; gap:10px;}
+  .brand h1{font-size:15.5px; margin:0; font-weight:700; letter-spacing:-0.01em;}
+  .brand p{margin:2px 0 0; font-size:12px; color:var(--ink-soft);}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
+  .search-wrap{padding:14px 20px 10px;}
+  .search-wrap input{
+    width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--line);
+    font-size:13px; background:var(--bg); color:var(--ink); outline:none;
   }
+  .search-wrap input:focus{border-color:var(--accent);}
 
-  .header {
-    background: var(--accent);
-    color: white;
-    padding: 2rem 2.5rem 1.5rem;
-    position: relative;
-    overflow: hidden;
+  .actions-row{padding:2px 20px 12px; display:flex; flex-direction:column; gap:8px;}
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    font-size:12.5px; font-weight:600; padding:8px 12px; border-radius:8px;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    cursor:pointer; width:100%;
   }
-  .header::after {
-    content: '';
-    position: absolute;
-    right: -40px; top: -40px;
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    background: rgba(230,57,70,0.15);
+  .btn:hover{background:var(--bg);}
+  .btn-primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .btn-primary:hover{background:var(--accent-ink);}
+  .btn svg{flex:none;}
+  .file-input-hidden{display:none;}
+  .toast{
+    position:fixed; top:18px; right:18px; z-index:50;
+    background:var(--ink); color:#fff; font-size:13px; font-weight:600;
+    padding:11px 16px; border-radius:8px; box-shadow:var(--shadow);
+    display:flex; align-items:center; gap:8px; opacity:0; transform:translateY(-6px);
+    transition:opacity .2s ease, transform .2s ease; pointer-events:none;
   }
-  .header-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent2);
-    margin-bottom: 0.5rem;
-  }
-  .header h1 {
-    font-size: 1.6rem;
-    font-weight: 600;
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
-  }
-  .header p {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.55);
-    max-width: 540px;
-  }
+  .toast.show{opacity:1; transform:translateY(0);}
+  .toast.error{background:var(--grade-d);}
+  .upload-help{font-size:11px; color:var(--ink-faint); padding:0 4px; line-height:1.4;}
 
-  .progress-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.1);
-    position: relative;
+  .vendor-list{overflow-y:auto; flex:1; padding:4px 10px 20px;}
+  .sup-group{margin-top:10px;}
+  .sup-group-label{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-faint);
+    padding:8px 10px 4px; font-weight:600;
   }
-  .progress-fill {
-    height: 100%;
-    background: var(--accent2);
-    transition: width 0.4s ease;
-    width: 0%;
+  .vendor-item{
+    display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px;
+    cursor:pointer; border:1px solid transparent;
   }
+  .vendor-item:hover{background:var(--bg);}
+  .vendor-item.active{background:var(--accent-soft); border-color:var(--accent);}
+  .vendor-item .name{font-size:13px; font-weight:600; flex:1; line-height:1.25;}
+  .vendor-item .meta{font-size:10.5px; color:var(--ink-soft); font-weight:400;}
+  .badge{
+    font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .badge-A{background:var(--grade-a-soft); color:var(--grade-a);}
+  .badge-B{background:var(--grade-b-soft); color:var(--grade-b);}
+  .badge-C{background:var(--grade-c-soft); color:var(--grade-c);}
+  .badge-D{background:var(--grade-d-soft); color:var(--grade-d);}
+  .trend{font-size:11px; font-weight:700;}
+  .trend.up{color:var(--grade-a);}
+  .trend.down{color:var(--grade-d);}
+  .trend.flat{color:var(--ink-faint);}
 
-  .form-body {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
+  /* ---------- main ---------- */
+  .main{flex:1; padding:28px 36px 60px; max-width:1040px;}
+  .empty-state{padding:80px 20px; text-align:center; color:var(--ink-soft);}
+  .empty-state .cap-lg{
+    width:56px;height:56px;border-radius:50%;margin:0 auto 14px;
+    background:conic-gradient(from 0deg, var(--accent) 0 8%, transparent 8% 16%, var(--accent) 16% 24%, transparent 24% 32%, var(--accent) 32% 40%, transparent 40% 48%, var(--accent) 48% 56%, transparent 56% 64%, var(--accent) 64% 72%, transparent 72% 80%, var(--accent) 80% 88%, transparent 88% 96%);
+    position:relative;
   }
+  .empty-state .cap-lg::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--bg);}
 
-  .section {
-    display: none;
-  }
-  .section.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  .head-row{display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:22px;}
+  .vendor-title h2{margin:0 0 4px; font-size:22px; letter-spacing:-0.01em;}
+  .vendor-title .sub{font-size:13px; color:var(--ink-soft);}
+  .vendor-title .sub b{color:var(--ink);}
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1.5px solid var(--border);
+  .cap-hero{display:flex; align-items:center; gap:12px;}
+  .cap-hero .cap-badge{
+    width:58px; height:58px; border-radius:50%; position:relative; flex:none;
+    display:flex; align-items:center; justify-content:center;
   }
-  .section-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    background: var(--accent);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 4px;
+  .cap-hero .cap-badge::before{
+    content:''; position:absolute; inset:0; border-radius:50%;
   }
-  .section-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text2);
+  .cap-badge.g-A::before{background:conic-gradient(from 0deg, var(--grade-a) 0 8%, transparent 8% 16%, var(--grade-a) 16% 24%, transparent 24% 32%, var(--grade-a) 32% 40%, transparent 40% 48%, var(--grade-a) 48% 56%, transparent 56% 64%, var(--grade-a) 64% 72%, transparent 72% 80%, var(--grade-a) 80% 88%, transparent 88% 96%);}
+  .cap-badge.g-B::before{background:conic-gradient(from 0deg, var(--grade-b) 0 8%, transparent 8% 16%, var(--grade-b) 16% 24%, transparent 24% 32%, var(--grade-b) 32% 40%, transparent 40% 48%, var(--grade-b) 48% 56%, transparent 56% 64%, var(--grade-b) 64% 72%, transparent 72% 80%, var(--grade-b) 80% 88%, transparent 88% 96%);}
+  .cap-badge.g-C::before{background:conic-gradient(from 0deg, var(--grade-c) 0 8%, transparent 8% 16%, var(--grade-c) 16% 24%, transparent 24% 32%, var(--grade-c) 32% 40%, transparent 40% 48%, var(--grade-c) 48% 56%, transparent 56% 64%, var(--grade-c) 64% 72%, transparent 72% 80%, var(--grade-c) 80% 88%, transparent 88% 96%);}
+  .cap-badge.g-D::before{background:conic-gradient(from 0deg, var(--grade-d) 0 8%, transparent 8% 16%, var(--grade-d) 16% 24%, transparent 24% 32%, var(--grade-d) 32% 40%, transparent 40% 48%, var(--grade-d) 48% 56%, transparent 56% 64%, var(--grade-d) 64% 72%, transparent 72% 80%, var(--grade-d) 80% 88%, transparent 88% 96%);}
+  .cap-inner{
+    position:relative; width:38px; height:38px; border-radius:50%; background:var(--paper);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:17px;
   }
+  .g-A .cap-inner{color:var(--grade-a);}
+  .g-B .cap-inner{color:var(--grade-b);}
+  .g-C .cap-inner{color:var(--grade-c);}
+  .g-D .cap-inner{color:var(--grade-d);}
+  .cap-hero .cap-text{font-size:12px; color:var(--ink-soft); line-height:1.35;}
+  .cap-hero .cap-text .pct{font-size:20px; font-weight:800; color:var(--ink); display:block;}
 
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow);
-  }
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px;}
+  .kpi{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+  .kpi .label{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:600;}
+  .kpi .value{font-size:21px; font-weight:800; margin-top:5px;}
+  .kpi .sub{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
 
-  .field {
-    margin-bottom: 1.2rem;
-  }
-  .field:last-child { margin-bottom: 0; }
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px; margin-bottom:20px; box-shadow:var(--shadow);}
+  .panel h3{margin:0 0 2px; font-size:14px; font-weight:700;}
+  .panel .panel-sub{font-size:12px; color:var(--ink-soft); margin:0 0 16px;}
+  .chart-wrap{position:relative; height:280px;}
+  .chart-wrap svg{width:100%; height:100%; overflow:visible;}
+  .chart-wrap .gridline{stroke:#EBEEE8; stroke-width:1;}
+  .chart-wrap .axis-label{font-size:10px; fill:var(--ink-faint); font-family:'IBM Plex Mono',monospace;}
+  .chart-wrap .x-label{font-size:10px; fill:var(--ink-faint); font-family:'Inter',sans-serif;}
+  .chart-wrap .series-line{fill:none; stroke-linejoin:round; stroke-linecap:round;}
+  .chart-wrap .series-point{cursor:pointer;}
+  .chart-wrap .series-point:hover{stroke:var(--ink); stroke-width:2;}
 
-  label {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text2);
-    margin-bottom: 0.35rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .legend-toggle{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .legend-chip{
+    font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid var(--line);
+    cursor:pointer; user-select:none; color:var(--ink-soft); display:flex; align-items:center; gap:6px;
   }
-  label .req {
-    color: var(--accent2);
-    margin-left: 2px;
-  }
-  label .hint {
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: #9CA3AF;
-    text-transform: none;
-    letter-spacing: 0;
-    margin-left: 4px;
-  }
+  .legend-chip .dot{width:8px; height:8px; border-radius:50%;}
+  .legend-chip.off{opacity:.35;}
 
-  input[type="text"],
-  input[type="tel"],
-  input[type="number"],
-  select,
-  textarea {
-    width: 100%;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 0.6rem 0.85rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.92rem;
-    color: var(--text);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    outline: none;
-    -webkit-appearance: none;
+  table.hist{width:100%; border-collapse:collapse; font-size:13px;}
+  table.hist th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--ink-faint); font-weight:600; padding:0 10px 8px; border-bottom:1px solid var(--line);
   }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--accent3);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-  }
-  input.locked, select.locked, textarea.locked {
-    background: var(--locked);
-    color: var(--locked-text);
-    cursor: not-allowed;
-    border-color: #E5E5E5;
-    font-weight: 500;
-  }
-  textarea { resize: vertical; min-height: 80px; }
+  table.hist td{padding:10px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top;}
+  table.hist tr:last-child td{border-bottom:none;}
+  .hist-num{font-weight:700; color:var(--ink);}
+  .notes-cell{color:var(--ink-soft); font-size:12.5px; max-width:280px;}
+  .notes-cell.empty{color:var(--ink-faint); font-style:italic;}
+  .sup-tag{font-size:11px; color:var(--ink-soft);}
 
-  .radio-group, .check-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .radio-group.horizontal {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+  details.q-detail{margin-top:4px;}
+  details.q-detail summary{cursor:pointer; font-size:11.5px; color:var(--accent); font-weight:600; list-style:none;}
+  details.q-detail summary::-webkit-details-marker{display:none;}
+  details.q-detail summary::before{content:'▸ '; }
+  details.q-detail[open] summary::before{content:'▾ ';}
+  .pilar-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px;}
+  .pilar-cell{background:var(--bg); border-radius:8px; padding:8px 10px;}
+  .pilar-cell .pn{font-size:10px; color:var(--ink-soft); line-height:1.2; min-height:24px;}
+  .pilar-cell .pv{font-size:15px; font-weight:800; margin-top:4px;}
+  .q-list{margin-top:8px; padding-left:0; list-style:none; font-size:11.5px; color:var(--ink-soft);}
+  .q-list li{display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed var(--line-soft);}
+  .q-list li:last-child{border-bottom:none;}
+  .q-score{font-weight:700; color:var(--ink);}
 
-  .radio-opt, .check-opt {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.55rem 0.85rem;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    cursor: pointer;
-    background: var(--input-bg);
-    transition: all 0.15s;
-    font-size: 0.9rem;
-  }
-  .radio-opt:hover, .check-opt:hover {
-    border-color: var(--accent3);
-    background: #EFF6FF;
-  }
-  .radio-opt.selected, .check-opt.selected {
-    border-color: var(--accent3);
-    background: #EFF6FF;
-    color: var(--accent3);
-    font-weight: 500;
-  }
-  .radio-opt input, .check-opt input {
-    width: 16px; height: 16px;
-    accent-color: var(--accent3);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+  footer.foot{margin-top:24px; font-size:11px; color:var(--ink-faint); text-align:center;}
 
-  .result-box {
-    background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
-    border-radius: var(--radius);
-    padding: 1.2rem 1.5rem;
-    margin: 1rem 0;
-    display: none;
-    align-items: center;
-    gap: 14px;
+  @media (max-width: 900px){
+    .shell{flex-direction:column;}
+    .sidebar{width:100%; height:auto; position:relative; max-height:40vh;}
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+    .pilar-grid{grid-template-columns:repeat(2,1fr);}
+    .main{padding:20px;}
   }
-  .result-box.show, .result-box[style*="flex"] {
-    display: flex !important;
-  }
-  .result-box .icon {
-    font-size: 2rem;
-    flex-shrink: 0;
-  }
-  .result-box .label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 3px;
-  }
-  .result-box .value {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #FFFFFF;
-    letter-spacing: 0.02em;
-  }
-  .result-box .sublabel {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.4);
-    margin-top: 2px;
-  }
-
-  .locked-field-wrap {
-    position: relative;
-  }
-  .lock-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    color: var(--locked-text);
-  }
-
-  .nav-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 1.5rem;
-    justify-content: space-between;
-  }
-  .btn {
-    padding: 0.65rem 1.5rem;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-  }
-  .btn-primary:hover { background: #2d2d4e; }
-  .btn-secondary {
-    background: white;
-    color: var(--text2);
-    border: 1px solid var(--border);
-  }
-  .btn-secondary:hover { background: var(--bg); }
-  .btn-danger {
-    background: var(--accent2);
-    color: white;
-  }
-  .btn-danger:hover { background: #c1121f; }
-  .btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .info-box {
-    background: #EFF6FF;
-    border: 1px solid #BFDBFE;
-    border-radius: 7px;
-    padding: 0.75rem 1rem;
-    font-size: 0.83rem;
-    color: #1D4ED8;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
-  .warn-box {
-    background: #FFF7ED;
-    border: 1px solid #FED7AA;
-    border-radius: 7px;
-    padding: 0.75rem 1rem;
-    font-size: 0.83rem;
-    color: #C2410C;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
-
-  .success-screen {
-    text-align: center;
-    padding: 3rem 1rem;
-    display: none;
-  }
-  .success-screen.show { display: block; animation: fadeIn 0.4s ease; }
-  .success-icon {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-  }
-  .success-screen h2 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  .success-screen p {
-    color: var(--text2);
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-  }
-  .summary-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1.5rem;
-    text-align: left;
-    font-size: 0.88rem;
-    line-height: 1.9;
-  }
-  .summary-card strong {
-    color: var(--text2);
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: block;
-    margin-top: 0.5rem;
-  }
-  .summary-card span {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .tree-path {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 1rem;
-  }
-  .tree-step {
-    font-size: 0.75rem;
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    font-weight: 500;
-  }
-
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 1.5rem 0;
-  }
-
-  .grid2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  @media (max-width: 500px) {
-    .grid2 { grid-template-columns: 1fr; }
-    .radio-group.horizontal { flex-direction: column; }
-  }
-
-  /* Subcanal ON sub-questions */
-  .sub-q {
-    display: none;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--border);
-  }
-  .sub-q.show { display: block; animation: fadeIn 0.25s ease; }
-
-  .badge-canal {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .badge-on { background: #FEE2E2; color: #991B1B; }
-  .badge-off { background: #DCFCE7; color: #166534; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-tag">Galaxia · Gestión comercial</div>
-  <h1>Forms Clientes</h1>
-  <p>Altas · Bajas · Potenciales · Activos · Cambio razón social</p>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-row">
+        <span class="cap"></span>
+        <div>
+          <h1>Coaching de Promotores</h1>
+          <p>Seguimiento mensual por vendedor</p>
+        </div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Buscar promotor o supervisor…">
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-primary" id="btnUpdate">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path></svg>
+        Actualizar base
+      </button>
+      <button class="btn" id="btnDownload">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+        Descargar HTML actualizado
+      </button>
+      <div class="upload-help">Subí el CSV exportado del formulario de respuestas (Archivo → Descargar → CSV en Google Sheets). Reemplaza toda la base por lo que traiga el archivo.</div>
+      <input type="file" id="csvFileInput" accept=".csv" class="file-input-hidden">
+    </div>
+    <div class="vendor-list" id="vendorList"><div class="sup-group"><div class="sup-group-label">Fernando Moreno</div><div class="vendor-item">
+        <span class="badge badge-B">B</span>
+        <span class="name">ARAVENA CRISTIAN ADRIÁN<br><span class="meta">2 coachings · <span class="trend down">▼ 5.5 pts</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-B">B</span>
+        <span class="name">KEBERLEIN ARIANA<br><span class="meta">3 coachings · <span class="trend flat">· estable</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-B">B</span>
+        <span class="name">MARQUEZ JOAQUIN<br><span class="meta">3 coachings · <span class="trend down">▼ 5.5 pts</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">MAXIMILIANO FRANCISCO MARTIRE<br><span class="meta">4 coachings · <span class="trend up">▲ 7.5 pts</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-B">B</span>
+        <span class="name">MORA MATIAS ARIEL<br><span class="meta">3 coachings · <span class="trend down">▼ 3.3 pts</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-B">B</span>
+        <span class="name">NUÑEZ MAURO<br><span class="meta">3 coachings · <span class="trend flat">· estable</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-B">B</span>
+        <span class="name">ORLANDO JOSÉ REYES MORA<br><span class="meta">3 coachings · <span class="trend flat">· estable</span></span></span>
+      </div></div><div class="sup-group"><div class="sup-group-label">Pedro Corsino</div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">ACEVEDO MARIA EUGENIA<br><span class="meta">1 coaching · <span class="trend flat">—</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">ALTAMIRANO BAHAMONDES TOMAS<br><span class="meta">1 coaching · <span class="trend flat">—</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">JUAN CARLOS VEGA<br><span class="meta">1 coaching · <span class="trend flat">—</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">MILLAIN BETIANA<br><span class="meta">3 coachings · <span class="trend down">▼ 3.3 pts</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">MORA MAURO<br><span class="meta">3 coachings · <span class="trend flat">· estable</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">MUÑOZ DAMIAN<br><span class="meta">1 coaching · <span class="trend flat">—</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">RODRIGO D´URSO PAEZ<br><span class="meta">2 coachings · <span class="trend down">▼ 7.0 pts</span></span></span>
+      </div></div><div class="sup-group"><div class="sup-group-label">Roberto Seco</div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">GOMEZ RAUL ALEJANDRO<br><span class="meta">3 coachings · <span class="trend down">▼ 1.3 pts</span></span></span>
+      </div><div class="vendor-item">
+        <span class="badge badge-A">A</span>
+        <span class="name">MELINAO LUCAS<br><span class="meta">3 coachings · <span class="trend up">▲ 1.3 pts</span></span></span>
+      </div></div></div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="empty-state" id="emptyState">
+      <div class="cap-lg"></div>
+      <p>Elegí un promotor a la izquierda para ver su evolución en los coachings.</p>
+    </div>
+    <div id="detailView" style="display:none;"></div>
+  </main>
 </div>
-<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-<div class="form-body">
+<div class="toast" id="toast">Base actualizada: 39 coachings · 16 promotores</div>
 
-  <!-- ============================================================ -->
-  <!-- S0: DATOS INICIALES -->
-  <!-- ============================================================ -->
-  <div class="section active" id="s0">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <span class="section-title">Datos del vendedor</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Nombre del vendedor <span class="req">*</span><span class="hint">Si sos backup, seleccioná tu nombre</span></label>
-        <select id="f_vendedor">
-          <option value="">— Seleccioná tu nombre —</option>
-          <option>NO LO SÉ</option>
-          <option>ACEVEDO MARIA EUGENIA</option>
-          <option>ALTAMIRANO BAHAMONDES TOMAS</option>
-          <option>ANTUAL PAULA</option>
-          <option>ARAVENA CRISTIAN ADRIÁN</option>
-          <option>CORSINO PEDRO</option>
-          <option>DALLEVA SALINAS ALEXIS</option>
-          <option>FIGUEROA JONATHAN</option>
-          <option>GOMEZ RAUL ALEJANDRO</option>
-          <option>JUAN CARLOS VEGA</option>
-          <option>KEBERLEIN ARIANA</option>
-          <option>LEON ABRIL CANDELA</option>
-          <option>MARTIRÉ MAXIMILIANO</option>
-          <option>MARQUEZ JOAQUIN</option>
-          <option>MELINAO LUCAS</option>
-          <option>MILLAIN BETIANA</option>
-          <option>MORA MATIAS ARIEL</option>
-          <option>MORA MAURO</option>
-          <option>MORENO FERNANDO</option>
-          <option>MUÑOZ DAMIAN</option>
-          <option>NUÑEZ MAURO</option>
-          <option>ORLANDO JOSÉ REYES MORA</option>
-          <option>RODRIGO D´URSO PAEZ</option>
-          <option>SALINA LAUTARO</option>
-          <option>SECO ROBERTO ENRIQUE</option>
-          <option>VIQUEIRA MARTIN</option>
-        </select>
-      </div>
-      <div class="grid2">
-        <div class="field">
-          <label>Número de contacto del cliente <span class="req">*</span></label>
-          <input type="tel" id="f_contacto" placeholder="Ej: 2994123456">
-        </div>
-        <div class="field">
-          <label>Horario de atención <span class="req">*</span></label>
-          <input type="text" id="f_horario" placeholder="Ej: Lun-Vie 9 a 18hs">
-        </div>
-      </div>
-      <div class="field">
-        <label>¿Vende bebidas alcohólicas? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_alcohol">
-          <label class="radio-opt"><input type="radio" name="alcohol" value="si"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="alcohol" value="no"> No</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>¿Puede recibir de tarde (segunda vuelta)? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_segundavuelta">
-          <label class="radio-opt"><input type="radio" name="segundavuelta" value="si"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="segundavuelta" value="no"> No</label>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Objetivo del formulario <span class="req">*</span></label>
-        <div class="radio-group" id="rg_objetivo">
-          <label class="radio-opt"><input type="radio" name="objetivo" value="alta"> Alta de cliente</label>
-          <label class="radio-opt"><input type="radio" name="objetivo" value="baja"> Baja de cliente</label>
-          <label class="radio-opt"><input type="radio" name="objetivo" value="potencial"> Cliente potencial</label>
-          <label class="radio-opt"><input type="radio" name="objetivo" value="activo"> Comentario cliente activo</label>
-          <label class="radio-opt"><input type="radio" name="objetivo" value="razonsocial"> Cambio razón social</label>
-        </div>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <span></span>
-      <button class="btn btn-primary" onclick="goNext('s0')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_ALTA_1: DATOS BÁSICOS DEL CLIENTE -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_alta1">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Datos del cliente</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>¿Fue cliente anteriormente? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_excliente">
-          <label class="radio-opt"><input type="radio" name="excliente" value="si"> Sí (cliente anulado)</label>
-          <label class="radio-opt"><input type="radio" name="excliente" value="no"> No</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Tipo de contribuyente <span class="req">*</span></label>
-        <div class="radio-group" id="rg_contribuyente">
-          <label class="radio-opt"><input type="radio" name="contribuyente" value="monotributo"> Monotributo</label>
-          <label class="radio-opt"><input type="radio" name="contribuyente" value="ri"> Responsable Inscripto</label>
-          <label class="radio-opt"><input type="radio" name="contribuyente" value="cf"> Consumidor Final</label>
-          <label class="radio-opt"><input type="radio" name="contribuyente" value="otro"> Otro</label>
-        </div>
-      </div>
-      <div class="grid2">
-        <div class="field">
-          <label>CUIT / DNI <span class="req">*</span><span class="hint">MT/RI → CUIT · CF → DNI</span></label>
-          <input type="text" id="f_cuit" placeholder="Ej: 20123456780">
-        </div>
-        <div class="field">
-          <label>Razón social <span class="req">*</span><span class="hint">Tal cual aparece en ARCA/AFIP</span></label>
-          <input type="text" id="f_razonsocial" placeholder="Razón social exacta">
-        </div>
-      </div>
-      <div class="grid2">
-        <div class="field">
-          <label>Nombre de fantasía</label>
-          <input type="text" id="f_fantasia" placeholder="Nombre comercial (opcional)">
-        </div>
-        <div class="field">
-          <label>Localidad <span class="req">*</span></label>
-          <input type="text" id="f_localidad" placeholder="Ej: Neuquén Capital">
-        </div>
-      </div>
-      <div class="field">
-        <label>Domicilio <span class="req">*</span></label>
-        <div class="warn-box">⚠️ No mandar "Manzana X casa X" porque resulta IMPOSIBLE de encontrar. Completá con la ubicación que da Google Maps. Cualquier duda escribí al 2994527983.</div>
-        <input type="text" id="f_domicilio" placeholder="Calle, número o ubicación Google Maps">
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_alta1')">← Volver</button>
-      <button class="btn btn-primary" onclick="goNext('s_alta1')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_CANAL: ON o OFF -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_canal">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <span class="section-title">Canal — consumo en el local</span>
-    </div>
-    <div class="card">
-      <div class="info-box">Esta pregunta determina qué árbol de decisión se usa para clasificar el punto de venta.</div>
-      <div class="field">
-        <label>¿Las bebidas se consumen <strong>dentro</strong> de las instalaciones del comercio? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_canal">
-          <label class="radio-opt"><input type="radio" name="canal" value="on"> Sí → Canal ON</label>
-          <label class="radio-opt"><input type="radio" name="canal" value="off"> No → Canal OFF</label>
-        </div>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_canal')">← Volver</button>
-      <button class="btn btn-primary" onclick="goNext('s_canal')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_OFF: ÁRBOL OFF COMPLETO -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_off">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <span class="section-title">Árbol de decisión — Canal OFF</span>
-      <span class="badge-canal badge-off">OFF</span>
-    </div>
-
-    <!-- PASO OFF-1: Principal comprador -->
-    <div class="card" id="off_p1">
-      <div class="field">
-        <label>¿Cuál es el principal comprador de bebidas de este PDV? <span class="req">*</span></label>
-        <div class="radio-group" id="rg_comprador">
-          <label class="radio-opt"><input type="radio" name="comprador" value="otros_y_cf" onchange="offStep1()"> Otros comercios y consumidores finales</label>
-          <label class="radio-opt"><input type="radio" name="comprador" value="cf" onchange="offStep1()"> Solo consumidores finales</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-2a: Mayorista (si comprador = otros comercios) -->
-    <div class="card sub-q" id="off_mayorista">
-      <div class="field">
-        <label>¿Cuenta con salón de ventas al público? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_salon">
-          <label class="radio-opt"><input type="radio" name="salon" value="si" onchange="offStepMayorista()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="salon" value="no" onchange="offStepMayorista()"> No</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-2b: Productos esenciales (si CF) -->
-    <div class="card sub-q" id="off_esenciales">
-      <div class="field">
-        <label>¿Principalmente vende productos esenciales (aceite, fideos, conservas, cereales)? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_esenciales">
-          <label class="radio-opt"><input type="radio" name="esenciales" value="si" onchange="offStep2b()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="esenciales" value="no" onchange="offStep2b()"> No</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-3: Cereales / dietética -->
-    <div class="card sub-q" id="off_cereales">
-      <div class="field">
-        <label>¿Principalmente vende cereales, productos naturales, dietéticos, saludables u orgánicos? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_cereales">
-          <label class="radio-opt"><input type="radio" name="cereales" value="si" onchange="offStep3()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="cereales" value="no" onchange="offStep3()"> No</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-4: Distribución del local (almacén) -->
-    <div class="card sub-q" id="off_local">
-      <div class="field">
-        <label>¿Se puede ingresar al PDV? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_ingreso">
-          <label class="radio-opt"><input type="radio" name="ingreso" value="si" onchange="offStep4()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="ingreso" value="no" onchange="offStep4()"> No</label>
-        </div>
-      </div>
-      <div class="sub-q" id="off_local_tipo">
-        <div class="field">
-          <label>Indique la opción que más se ajusta al PDV <span class="req">*</span></label>
-          <div class="radio-group" id="rg_tipolocal">
-            <label class="radio-opt"><input type="radio" name="tipolocal" value="almacen" onchange="offSetSubcanalLocal()"> No tiene pasillos</label>
-            <label class="radio-opt"><input type="radio" name="tipolocal" value="almacen_autoservice" onchange="offSetSubcanalLocal()"> Tiene al menos un pasillo, pero sin línea de caja</label>
-            <label class="radio-opt"><input type="radio" name="tipolocal" value="autoservice" onchange="offSetSubcanalLocal()"> Tiene línea de caja en entrada/salida</label>
-            <label class="radio-opt"><input type="radio" name="tipolocal" value="almacen_autoservice_virtual" onchange="offSetSubcanalLocal()"> Solo vende por internet/teléfono</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-5: Golosinas / combustible -->
-    <div class="card sub-q" id="off_golosinas">
-      <div class="field">
-        <label>¿Principalmente vende gran variedad de golosinas y cigarrillos, o algún tipo de combustible? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_golosinas">
-          <label class="radio-opt"><input type="radio" name="golosinas" value="si" onchange="offStep5()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="golosinas" value="no" onchange="offStep5()"> No</label>
-        </div>
-      </div>
-      <div class="sub-q" id="off_golosinas_tipo">
-        <div class="field">
-          <label>Indique qué opción describe mejor al PDV <span class="req">*</span></label>
-          <div class="radio-group" id="rg_tipogolosinas">
-            <label class="radio-opt"><input type="radio" name="tipogolosinas" value="estacion_servicio" onchange="offSetSubcanalGolosinas()"> Venden algún tipo de combustible</label>
-            <label class="radio-opt"><input type="radio" name="tipogolosinas" value="kiosco_tipo" onchange="offSetSubcanalGolosinas()"> Principalmente vende golosinas y cigarrillos</label>
-          </div>
-        </div>
-        <div class="sub-q" id="off_kiosco_tipo">
-          <div class="field">
-            <label>¿Se puede ingresar al PDV? <span class="req">*</span></label>
-            <div class="radio-group horizontal" id="rg_kioscoingreso">
-              <label class="radio-opt"><input type="radio" name="kioscoingreso" value="si" onchange="offSetSubcanalKiosco()"> Sí</label>
-              <label class="radio-opt"><input type="radio" name="kioscoingreso" value="no" onchange="offSetSubcanalKiosco()"> No</label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-6: Bebidas (sección B) -->
-    <div class="card sub-q" id="off_bebidas">
-      <div class="field">
-        <label>¿Principalmente vende bebidas? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_bebidas">
-          <label class="radio-opt"><input type="radio" name="bebidas" value="si" onchange="offStep6()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="bebidas" value="no" onchange="offStep6()"> No</label>
-        </div>
-      </div>
-      <div class="sub-q" id="off_bebidas_tipo">
-        <div class="field">
-          <label>Indique la opción que representa al PDV <span class="req">*</span></label>
-          <div class="radio-group" id="rg_tipobebidas">
-            <label class="radio-opt"><input type="radio" name="tipobebidas" value="vinoteca" onchange="offSetSubcanalBebidas()"> Más del 50% de su exhibición son vinos</label>
-            <label class="radio-opt"><input type="radio" name="tipobebidas" value="tienda_bebidas" onchange="offSetSubcanalBebidas()"> Tiene al menos un pasillo pero sin línea de caja</label>
-            <label class="radio-opt"><input type="radio" name="tipobebidas" value="deposito_tienda_virtual" onchange="offSetSubcanalBebidas()"> Tiene línea de caja en entrada/salida</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-7: Frescos -->
-    <div class="card sub-q" id="off_frescos">
-      <div class="field">
-        <label>¿Principalmente vende productos frescos/crudos (verduras, carnes, pescados, pastas, fiambres)? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_frescos">
-          <label class="radio-opt"><input type="radio" name="frescos" value="si" onchange="offStep7()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="frescos" value="no" onchange="offStep7()"> No</label>
-        </div>
-      </div>
-      <div class="sub-q" id="off_frescos_tipo">
-        <div class="field">
-          <label>Indique la opción que describe al PDV <span class="req">*</span></label>
-          <div class="radio-group" id="rg_tipofrescos">
-            <label class="radio-opt"><input type="radio" name="tipofrescos" value="verduleria" onchange="offSetSubcanalFrescos()"> Principalmente vende verduras</label>
-            <label class="radio-opt"><input type="radio" name="tipofrescos" value="carniceria" onchange="offSetSubcanalFrescos()"> Principalmente vende carnes rojas y/o pollo crudo</label>
-            <label class="radio-opt"><input type="radio" name="tipofrescos" value="pescaderia" onchange="offSetSubcanalFrescos()"> Principalmente vende pescado por kilo</label>
-            <label class="radio-opt"><input type="radio" name="tipofrescos" value="fiambreria" onchange="offSetSubcanalFrescos()"> Principalmente vende quesos frescos y/o fiambres</label>
-            <label class="radio-opt"><input type="radio" name="tipofrescos" value="casa_pastas" onchange="offSetSubcanalFrescos()"> Principalmente vende pastas frescas por kilo</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-8: Elaborados -->
-    <div class="card sub-q" id="off_elaborados">
-      <div class="field">
-        <label>¿Principalmente vende alimentos elaborados/listos para consumir o pan, facturas y tortas? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_elaborados">
-          <label class="radio-opt"><input type="radio" name="elaborados" value="si" onchange="offStep8()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="elaborados" value="no" onchange="offStep8()"> No</label>
-        </div>
-      </div>
-      <div class="sub-q" id="off_elaborados_tipo">
-        <div class="field">
-          <label>Indique la opción que describe al PDV <span class="req">*</span></label>
-          <div class="radio-group" id="rg_tipoelaborados">
-            <label class="radio-opt"><input type="radio" name="tipoelaborados" value="rotiseria" onchange="offSetSubcanalElaborados()"> Principalmente vende comidas listas para consumir</label>
-            <label class="radio-opt"><input type="radio" name="tipoelaborados" value="panaderia" onchange="offSetSubcanalElaborados()"> Principalmente vende facturas, pan y/o tortas</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO OFF-9: Medicamentos -->
-    <div class="card sub-q" id="off_medicamentos">
-      <div class="field">
-        <label>¿El PDV vende medicamentos bajo receta y/o artículos de perfumería? <span class="req">*</span></label>
-        <div class="radio-group horizontal" id="rg_medicamentos">
-          <label class="radio-opt"><input type="radio" name="medicamentos" value="si" onchange="offSetSubcanalMedicamentos('FARMACIA/PERFUMERÍA')"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="medicamentos" value="no" onchange="offStep9noMatch()"> No</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- RESULTADO OFF -->
-    <div id="off_resultado" style="display:none;">
-      <div class="result-box">
-        <div class="icon">🏪</div>
-        <div>
-          <div class="label">Subcanal OFF detectado</div>
-          <div class="value" id="off_subcanal_display">—</div>
-          <div class="sublabel">Este campo se completará automáticamente</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_off')">← Volver</button>
-      <button class="btn btn-primary" id="btn_off_next" onclick="goNext('s_off')" disabled>Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_ON: ÁRBOL ON — lógica exacta del árbol de decisión       -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_on">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <span class="section-title">Árbol de decisión — Canal ON</span>
-      <span class="badge-canal badge-on">ON</span>
-    </div>
-
-    <div class="card">
-      <div class="info-box">Respondé cada pregunta. El subcanal se determinará automáticamente según tus respuestas.</div>
-
-      <!-- P1: Nocturno — primera pregunta del árbol ON -->
-      <div class="field">
-        <label>¿La ocasión principal de consumo ocurre en horario nocturno? <span class="req">*</span></label>
-        <div class="radio-group horizontal">
-          <label class="radio-opt"><input type="radio" name="on_nocturno" value="si" onchange="on_nocturno()"> Sí</label>
-          <label class="radio-opt"><input type="radio" name="on_nocturno" value="no" onchange="on_nocturno()"> No</label>
-        </div>
-      </div>
-
-      <!-- P_MAYORISTA: ¿mayorista ON? (rama de no-nocturno/no-gastro/no-actividad) -->
-      <div class="sub-q" id="on_p_mayorista">
-        <div class="field">
-          <label>¿El PDV vende bebidas al por mayor? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_mayorista" value="si" onchange="on_mayorista()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_mayorista" value="no" onchange="on_mayorista()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- NOCTURNO=SI → música/baile? -->
-      <div class="sub-q" id="on_p_baile">
-        <div class="field">
-          <label>En esta ocasión nocturna, ¿el consumo está centrado en música, baile o show en vivo? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_baile" value="si" onchange="on_baile()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_baile" value="no" onchange="on_baile()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- baile=NO → es bar? -->
-      <div class="sub-q" id="on_p_bar">
-        <div class="field">
-          <label>¿El PDV es un bar donde la bebida es el driver principal? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_bar" value="si" onchange="on_bar()"> Sí</label>
-          </div>
-        </div>
-        <div id="on_aviso_nocturno" style="display:none;margin-top:1rem;background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:0.9rem 1rem;font-size:0.88rem;color:#92400E;line-height:1.6;">
-          <strong>⬆️ Si el PDV no es un boliche ni un bar</strong>, significa que probablemente no es un local nocturno.<br>
-          Volvé a la primera pregunta y respondé <strong>"NO"</strong> en <em>"¿La ocasión principal de consumo ocurre en horario nocturno?"</em> para continuar por la rama correcta.
-        </div>
-      </div>
-
-      <!-- NOCTURNO=NO → gastronomía? -->
-      <div class="sub-q" id="on_p_gastro">
-        <div class="field">
-          <label>¿La ocasión principal está vinculada a la comida/gastronomía? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_gastro" value="si" onchange="on_gastro()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_gastro" value="no" onchange="on_gastro()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- GASTRO → pizza? -->
-      <div class="sub-q" id="on_p_pizza">
-        <div class="field">
-          <label>¿El foco principal es la pizza? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_pizza" value="si" onchange="on_pizza()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_pizza" value="no" onchange="on_pizza()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- GASTRO → hamburguesas? -->
-      <div class="sub-q" id="on_p_hambur">
-        <div class="field">
-          <label>¿El foco principal es hamburguesas o sándwiches? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_hambur" value="si" onchange="on_hambur()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_hambur" value="no" onchange="on_hambur()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- GASTRO → café/pastelería? -->
-      <div class="sub-q" id="on_p_cafe">
-        <div class="field">
-          <label>¿El foco principal es café/pastelería (desayuno/merienda)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_cafe" value="si" onchange="on_cafe()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_cafe" value="no" onchange="on_cafe()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- GASTRO → restaurante? -->
-      <div class="sub-q" id="on_p_rest">
-        <div class="field">
-          <label>¿Ofrece carta completa o platos elaborados (pastas, carnes, cocina gourmet/regional)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_rest" value="si" onchange="on_rest()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_rest" value="no" onchange="on_rest()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- GASTRO → comidas al paso? (rest=NO) -->
-      <div class="sub-q" id="on_p_alpaso">
-        <div class="field">
-          <label>¿Combina comidas simples o formato al paso (menú del día, rotisería, take away)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_alpaso" value="si" onchange="on_alpaso()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_alpaso" value="no" onchange="on_alpaso()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- al paso=NO → cadena global? -->
-      <div class="sub-q" id="on_p_cadglobal">
-        <div class="field">
-          <label>¿Pertenece a una cadena global o franquicia internacional? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_cadglobal" value="si" onchange="on_cadglobal()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_cadglobal" value="no" onchange="on_cadglobal()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- cadena global=NO → cadena local? -->
-      <div class="sub-q" id="on_p_cadlocal">
-        <div class="field">
-          <label>¿Pertenece a una cadena local con más de 5 sucursales en la región? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_cadlocal" value="si" onchange="on_cadlocal()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_cadlocal" value="no" onchange="on_cadlocal()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- NO GASTRO → actividad principal? -->
-      <div class="sub-q" id="on_p_actividad">
-        <div class="field">
-          <label>¿El consumo ocurre como parte de otra actividad principal (deporte, evento, educación, entretenimiento, hospedaje)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_actividad" value="si" onchange="on_actividad()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_actividad" value="no" onchange="on_actividad()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVIDAD → deporte? -->
-      <div class="sub-q" id="on_p_deporte">
-        <div class="field">
-          <label>¿Está dentro o vinculado a un estadio, club o espacio deportivo? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_deporte" value="si" onchange="on_deporte()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_deporte" value="no" onchange="on_deporte()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVIDAD → hotel? -->
-      <div class="sub-q" id="on_p_hotel">
-        <div class="field">
-          <label>¿Está vinculado a un hotel (bar/restaurante/rooftop de hotel)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_hotel" value="si" onchange="on_hotel()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_hotel" value="no" onchange="on_hotel()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVIDAD → casino? (antes que educación) -->
-      <div class="sub-q" id="on_p_casino">
-        <div class="field">
-          <label>¿El consumo ocurre en contexto de apuestas o juegos (casino/bingo)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_casino" value="si" onchange="on_casino()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_casino" value="no" onchange="on_casino()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVIDAD → educación? -->
-      <div class="sub-q" id="on_p_edu">
-        <div class="field">
-          <label>¿Opera dentro de un espacio educativo o campus universitario? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_edu" value="si" onchange="on_edu()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_edu" value="no" onchange="on_edu()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVIDAD → eventos? (antes que cultural) -->
-      <div class="sub-q" id="on_p_eventos">
-        <div class="field">
-          <label>¿Funciona como salón/centro de eventos, ferias o fiestas, o es un servicio de catering? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_eventos" value="si" onchange="on_eventos()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_eventos" value="no" onchange="on_eventos()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVIDAD → cultural/recreativo? -->
-      <div class="sub-q" id="on_p_cultural">
-        <div class="field">
-          <label>¿Está en un espacio cultural o recreativo (teatro, museo, parque temático)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_cultural" value="si" onchange="on_cultural()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_cultural" value="no" onchange="on_cultural()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- cultural=NO → shopping? -->
-      <div class="sub-q" id="on_p_shopping">
-        <div class="field">
-          <label>¿Se encuentra dentro de un shopping o complejo comercial? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_shopping" value="si" onchange="on_shopping()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_shopping" value="no" onchange="on_shopping()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- shopping=NO → transporte? -->
-      <div class="sub-q" id="on_p_transporte">
-        <div class="field">
-          <label>¿Se trata de un local en terminal, aeropuerto o estación de tren/micro? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_transporte" value="si" onchange="on_transporte()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_transporte" value="no" onchange="on_transporte()"> No</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- transporte=NO → parada en tránsito / estación de servicio -->
-      <div class="sub-q" id="on_p_estserv">
-        <div class="field">
-          <label>¿El consumo está vinculado a una parada en tránsito (estación de servicio, ruta)? <span class="req">*</span></label>
-          <div class="radio-group horizontal">
-            <label class="radio-opt"><input type="radio" name="on_estserv" value="si" onchange="on_estserv()"> Sí</label>
-            <label class="radio-opt"><input type="radio" name="on_estserv" value="no" onchange="on_estserv()"> No</label>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- CLASIFICACIÓN -->
-    <div class="card sub-q" id="on_p_clasif">
-      <div class="field">
-        <label>Clasificación del PDV <span class="req">*</span>
-          <span class="hint">Tipo detectado: <strong id="on_tipo_display" style="color:var(--accent)">—</strong></span>
-        </label>
-        <div class="radio-group">
-          <label class="radio-opt"><input type="radio" name="on_clasif" value="cadena" onchange="on_clasif()"> ¿Tiene ≥5 sucursales en la región o ≥2 interregionales? → <strong>CADENA</strong></label>
-          <label class="radio-opt"><input type="radio" name="on_clasif" value="top" onchange="on_clasif()"> ¿Es TOP? (embajador de marca / presente en polos gastronómicos más importantes del país) → <strong>TOP</strong></label>
-          <label class="radio-opt"><input type="radio" name="on_clasif" value="base" onchange="on_clasif()"> ¿Es BASE? (el consumidor lo elige por precio/cercanía, no tiene imagen desarrollada) → <strong>BASE</strong></label>
-          <label class="radio-opt"><input type="radio" name="on_clasif" value="reg" onchange="on_clasif()"> Ninguna de las anteriores → <strong>REG</strong></label>
-        </div>
-      </div>
-      <div id="on_aviso_gastro" style="display:none;margin-top:1rem;background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:0.9rem 1rem;font-size:0.88rem;color:#92400E;line-height:1.6;">
-        <strong>⬆️ Si no encontraste lo que buscabas</strong>, puede que no sea un local gastronómico.<br>
-        Volvé y respondé <strong>"NO"</strong> en <em>"¿La ocasión principal está vinculada a la comida/gastronomía?"</em> para ver más opciones.
-      </div>
-    </div>
-
-    <!-- RESULTADO ON -->
-    <div id="on_resultado" style="display:none;">
-      <div class="result-box">
-        <div class="icon">🍻</div>
-        <div>
-          <div class="label">Subcanal ON detectado</div>
-          <div class="value" id="on_subcanal_display">—</div>
-          <div class="sublabel">Campo bloqueado — determinado por el árbol de decisión</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_on')">← Volver</button>
-      <button class="btn btn-primary" id="btn_on_next" onclick="goNext('s_on')" disabled>Continuar →</button>
-    </div>
-  </div>
-
-    <!-- ============================================================ -->
-  <!-- S_VISITA: DÍAS DE VISITA + SUBCANAL BLOQUEADO -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_visita">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <span class="section-title">Días de visita y subcanal</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Días de visita <span class="req">*</span></label>
-        <div class="check-group" id="cg_dias" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <label class="check-opt"><input type="checkbox" name="dias" value="Lunes"> Lunes</label>
-          <label class="check-opt"><input type="checkbox" name="dias" value="Martes"> Martes</label>
-          <label class="check-opt"><input type="checkbox" name="dias" value="Miércoles"> Miércoles</label>
-          <label class="check-opt"><input type="checkbox" name="dias" value="Jueves"> Jueves</label>
-          <label class="check-opt"><input type="checkbox" name="dias" value="Viernes"> Viernes</label>
-          <label class="check-opt"><input type="checkbox" name="dias" value="Sábado"> Sábado</label>
-          <label class="check-opt"><input type="checkbox" name="dias" value="Domingo"> Domingo</label>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="field">
-        <label>Subcanal del PDV <span class="req">*</span></label>
-        <div class="locked-field-wrap">
-          <input type="text" id="f_subcanal" class="locked" readonly placeholder="Se completa automáticamente según el árbol">
-          <span class="lock-icon">🔒</span>
-        </div>
-        <div style="font-size:0.78rem;color:var(--text2);margin-top:4px;">Este campo está bloqueado. El sistema lo determinó en base a tus respuestas anteriores.</div>
-      </div>
-      <div class="field">
-        <label>¿Qué subcanal te dijo el cliente que era?</label>
-        <select id="f_subcanal_cliente">
-          <option value="">— Seleccionar —</option>
-          <option>MAYORISTA SALÓN</option><option>MAYORISTA DEPÓSITO</option><option>MAYORISTA ON</option>
-          <option>DIETÉTICA</option><option>ALMACÉN</option><option>ALMACÉN AUTOSERVICIO</option>
-          <option>AUTOSERVICIO</option><option>ALMACÉN VENTANA</option><option>ESTACIÓN DE SERVICIO</option>
-          <option>KIOSCO/MAXIKIOSCO</option><option>KIOSCO VENTANA</option><option>VINOTECA</option>
-          <option>TIENDA DE BEBIDAS</option><option>DEPÓSITO TIENDA VIRTUAL</option><option>VERDULERÍA</option>
-          <option>CARNICERÍA/POLLERÍA</option><option>PESCADERÍA</option><option>FIAMBRERÍA/QUESERÍA</option>
-          <option>CASA DE PASTAS</option><option>ROTISERÍA/COMIDA PARA LLEVAR</option>
-          <option>PANADERÍA/PASTELERÍA</option><option>FARMACIA/PERFUMERÍA</option>
-          <option>BAR</option><option>BOLICHE</option><option>RESTAURANTE</option><option>PIZZERÍA</option>
-          <option>HAMBURGUESERÍA</option><option>CAFÉ/CONFITERÍA</option><option>CASINO/JUEGOS</option>
-          <option>HOTEL</option><option>DEPORTE</option><option>EDUCACIÓN</option>
-          <option>EVENTOS</option><option>OTROS ENTRETENIMIENTOS</option><option>OTROS MEALS</option>
-          <option>CADENA TRANSPORTE</option><option>CADENA SHOPPING</option>
-          <option>CADENA GLOBAL</option><option>CADENA LOCAL</option>
-        </select>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_visita')">← Volver</button>
-      <button class="btn btn-primary" onclick="goNext('s_visita')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_FINAL: ARCHIVOS Y COMENTARIOS -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_final">
-    <div class="section-header">
-      <span class="section-num">06</span>
-      <span class="section-title">Cierre del alta</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Comentarios adicionales</label>
-        <textarea id="f_comentario_alta" placeholder="Cualquier dato extra relevante para el alta..."></textarea>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_final')">← Volver</button>
-      <button class="btn btn-danger" onclick="submitForm()">✓ Enviar formulario</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_BAJA -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_baja">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Baja de cliente</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Código de cliente <span class="req">*</span></label>
-        <input type="text" id="f_baja_codigo" placeholder="Código en sistema">
-      </div>
-      <div class="field">
-        <label>Motivo de la baja <span class="req">*</span></label>
-        <textarea id="f_baja_motivo" placeholder="Detallá el motivo..."></textarea>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_baja')">← Volver</button>
-      <button class="btn btn-primary" onclick="goSection('s_seccfinal')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_POTENCIAL -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_potencial">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Cliente potencial</span>
-    </div>
-    <div class="card">
-      <div class="info-box">Usá esta sección para registrar PDVs que podrían convertirse en clientes activos.</div>
-      <div class="field">
-        <label>Nombre del cliente potencial <span class="req">*</span></label>
-        <input type="text" id="f_pot_nombre" placeholder="Nombre o razón social">
-      </div>
-      <div class="field">
-        <label>¿Por qué no se puede dar de alta? <span class="req">*</span></label>
-        <div class="radio-group" id="rg_pot_motivo">
-          <label class="radio-opt"><input type="radio" name="pot_motivo" value="papeles"> Falta de papeles</label>
-          <label class="radio-opt"><input type="radio" name="pot_motivo" value="respuesta"> Falta respuesta del encargado</label>
-          <label class="radio-opt"><input type="radio" name="pot_motivo" value="precio"> Consigue mejor precio</label>
-          <label class="radio-opt"><input type="radio" name="pot_motivo" value="otro"> Otro</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Comentario adicional</label>
-        <textarea id="f_pot_comentario" placeholder="Contexto extra..."></textarea>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_potencial')">← Volver</button>
-      <button class="btn btn-primary" onclick="goSection('s_seccfinal')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_ACTIVO -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_activo">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Comentario cliente activo</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Código de cliente <span class="req">*</span></label>
-        <input type="text" id="f_activo_codigo" placeholder="Código en sistema">
-      </div>
-      <div class="field">
-        <label>¿Qué deberíamos tener en cuenta? <span class="req">*</span></label>
-        <textarea id="f_activo_comentario" placeholder="Describí la situación del cliente..."></textarea>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_activo')">← Volver</button>
-      <button class="btn btn-primary" onclick="goSection('s_seccfinal')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_RAZONSOCIAL -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_razonsocial">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Cambio de razón social</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Código de cliente <span class="req">*</span></label>
-        <input type="text" id="f_rs_codigo" placeholder="Código en sistema">
-      </div>
-      <div class="field">
-        <label>Nueva razón social <span class="req">*</span></label>
-        <input type="text" id="f_rs_nueva" placeholder="Tal cual aparece en ARCA/AFIP">
-      </div>
-      <div class="field">
-        <label>Tipo de contribuyente <span class="req">*</span></label>
-        <div class="radio-group" id="rg_rs_contribuyente">
-          <label class="radio-opt"><input type="radio" name="rs_contrib" value="monotributo"> Monotributo</label>
-          <label class="radio-opt"><input type="radio" name="rs_contrib" value="ri"> Responsable Inscripto</label>
-          <label class="radio-opt"><input type="radio" name="rs_contrib" value="cf"> Consumidor Final</label>
-          <label class="radio-opt"><input type="radio" name="rs_contrib" value="otro"> Otro</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>CUIT / DNI <span class="req">*</span><span class="hint">Monotributo o Resp. Inscripto → CUIT · Consumidor Final → DNI</span></label>
-        <input type="text" id="f_rs_cuit" placeholder="Ej: 20123456780">
-      </div>
-      <div class="field">
-        <label>Motivo del cambio <span class="req">*</span></label>
-        <div class="radio-group" id="rg_rs_motivo">
-          <label class="radio-opt"><input type="radio" name="rs_motivo" value="nuevo_local" onchange="toggleOtroRS()"> Compró un nuevo local</label>
-          <label class="radio-opt"><input type="radio" name="rs_motivo" value="impositivo" onchange="toggleOtroRS()"> Cuestión impositiva <span class="hint">Va a facturar con otro nombre/CUIT para no seguir acumulando impuestos con el anterior</span></label>
-          <label class="radio-opt"><input type="radio" name="rs_motivo" value="otro" onchange="toggleOtroRS()"> Otro</label>
-        </div>
-        <div class="field" id="f_rs_otro_wrap" style="display:none;margin-top:0.7rem;">
-          <label>Explicá el motivo <span class="req">*</span></label>
-          <input type="text" id="f_rs_otro" placeholder="Describí brevemente el motivo...">
-        </div>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_razonsocial')">← Volver</button>
-      <button class="btn btn-primary" onclick="goSection('s_seccfinal')">Continuar →</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- S_SECCFINAL: Cierre genérico para no-alta -->
-  <!-- ============================================================ -->
-  <div class="section" id="s_seccfinal">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <span class="section-title">Comentarios y archivos</span>
-    </div>
-    <div class="card">
-      <div class="field">
-        <label>Comentario extra (opcional)</label>
-        <textarea id="f_comentario_final" placeholder="Cualquier dato extra..."></textarea>
-      </div>
-    </div>
-    <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="goBack('s_seccfinal')">← Volver</button>
-      <button class="btn btn-danger" onclick="submitForm()">✓ Enviar formulario</button>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- SUCCESS -->
-  <!-- ============================================================ -->
-  <div class="success-screen" id="successScreen">
-    <div class="success-icon">✅</div>
-    <h2>¡Formulario enviado!</h2>
-    <p>Los datos fueron registrados correctamente. Máximo 3 días hábiles para procesar el alta.</p>
-    <div class="summary-card" id="summaryCard"></div>
-    <br>
-    <button class="btn btn-primary" onclick="resetForm()">Nuevo formulario</button>
-  </div>
-
-</div><!-- end form-body -->
+<script id="coaching-data" type="application/json">{"pilares_meta":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas"},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica"},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades"},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo"},{"id":"ejecucion","name":"Ejecución","short":"Ejecución"}],"vendors":[{"nombre":"ACEVEDO MARIA EUGENIA","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":1,"ultimo_total":87.5,"ultima_nota":"A","primer_total":87.5,"coachings":[{"promotor":"ACEVEDO MARIA EUGENIA","supervisor":"Pedro Corsino","fecha":"2026-07-21","fecha_raw":null,"total_pct":87.5,"avg_score":3.5,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":93.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":87.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Ejecucion en afiches externos","numero":1}]},{"nombre":"ALTAMIRANO BAHAMONDES TOMAS","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":1,"ultimo_total":93.75,"ultima_nota":"A","primer_total":93.75,"coachings":[{"promotor":"ALTAMIRANO BAHAMONDES TOMAS","supervisor":"Pedro Corsino","fecha":"2026-08-10","fecha_raw":null,"total_pct":93.75,"avg_score":3.7,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":100,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":87.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":93.75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Acomodar mas las heladeras","numero":1}]},{"nombre":"ARAVENA CRISTIAN ADRIÁN","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":2,"ultimo_total":75,"ultima_nota":"B","primer_total":80.5,"coachings":[{"promotor":"ARAVENA CRISTIAN ADRIÁN","supervisor":"Fernando Moreno","fecha":"2026-06-05","fecha_raw":null,"total_pct":80.5,"avg_score":3.25,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":77.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Mejorar planograma","numero":1},{"promotor":"ARAVENA CRISTIAN ADRIÁN","supervisor":"Fernando Moreno","fecha":"2026-04-15","fecha_raw":null,"total_pct":75,"avg_score":3,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":68.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":2}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":81.25,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Planograma de cvz yq ejecucion de pop externo","numero":2}]},{"nombre":"GOMEZ RAUL ALEJANDRO","supervisores":["Roberto Seco"],"supervisor_actual":"Roberto Seco","n_coachings":3,"ultimo_total":95.5,"ultima_nota":"A","primer_total":96.75,"coachings":[{"promotor":"GOMEZ RAUL ALEJANDRO","supervisor":"Roberto Seco","fecha":"2026-05-30","fecha_raw":null,"total_pct":96.75,"avg_score":3.85,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":100,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":96.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":100,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Mejora en los epp de seguridad y enfoque en Market Place","numero":1},{"promotor":"GOMEZ RAUL ALEJANDRO","supervisor":"Roberto Seco","fecha":"2026-04-09","fecha_raw":null,"total_pct":93.75,"avg_score":3.75,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":93.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":93.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":93.75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"ayudar mas a independizar sobre bees","numero":2},{"promotor":"GOMEZ RAUL ALEJANDRO","supervisor":"Roberto Seco","fecha":"2026-08-12","fecha_raw":null,"total_pct":95.5,"avg_score":3.8,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":93.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":100,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":90,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":100,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"usar guantes al manipular mercaderia","numero":3}]},{"nombre":"JUAN CARLOS VEGA","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":1,"ultimo_total":88,"ultima_nota":"A","primer_total":88,"coachings":[{"promotor":"JUAN CARLOS VEGA","supervisor":"Pedro Corsino","fecha":"2026-08-13","fecha_raw":null,"total_pct":88,"avg_score":3.5,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":87.5,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":90,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":68.75,"questions":[{"label":"Gestión de activos","weight":5,"score":2},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Acomodar mas los equipos de frios","numero":1}]},{"nombre":"KEBERLEIN ARIANA","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":3,"ultimo_total":82,"ultima_nota":"B","primer_total":82.5,"coachings":[{"promotor":"KEBERLEIN ARIANA","supervisor":"Fernando Moreno","fecha":"2026-06-04","fecha_raw":null,"total_pct":82.5,"avg_score":3.35,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":81.25,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":87.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Mejorar en PoP oferta","numero":1},{"promotor":"KEBERLEIN ARIANA","supervisor":"Fernando Moreno","fecha":"2026-04-06","fecha_raw":null,"total_pct":75,"avg_score":3,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":81.25,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":3},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":68.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":2},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Incrementar ccc cvz y nabs","numero":2},{"promotor":"KEBERLEIN ARIANA","supervisor":"Fernando Moreno","fecha":"2026-08-27","fecha_raw":null,"total_pct":82,"avg_score":3.3,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":85,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Falta pop externo cvz y nabs","numero":3}]},{"nombre":"MARQUEZ JOAQUIN","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":3,"ultimo_total":67,"ultima_nota":"B","primer_total":72.5,"coachings":[{"promotor":"MARQUEZ JOAQUIN","supervisor":"Fernando Moreno","fecha":"2026-06-19","fecha_raw":null,"total_pct":72.5,"avg_score":2.85,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":2},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":68.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":2},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":68.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":2},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":2}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Mejorar sku x pv y mejorar POP externo","numero":1},{"promotor":"MARQUEZ JOAQUIN","supervisor":"Fernando Moreno","fecha":"2026-08-05","fecha_raw":null,"total_pct":54.5,"avg_score":2.15,"grade":"C","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":50,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":2},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":2},{"label":"Aprendizaje contínuo","weight":5,"score":2},{"label":"Resiliencia","weight":5,"score":2}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":62.5,"questions":[{"label":"Seguridad","weight":5,"score":2},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":2},{"label":"Enfoque al cliente","weight":5,"score":2}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":56.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":2},{"label":"Propuestas de valor","weight":5,"score":2}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":53.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":2},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":2},{"label":"Compromiso BEES","weight":5,"score":2},{"label":"Logística","weight":2,"score":1}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":50,"questions":[{"label":"Gestión de activos","weight":5,"score":2},{"label":"Bees Vision","weight":5,"score":2},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":2},{"label":"PTC / POP sugeridos","weight":5,"score":2}]}],"notas":"Contaminacion y falta de POP de nabs","numero":2},{"promotor":"MARQUEZ JOAQUIN","supervisor":"Fernando Moreno","fecha":"2026-04-17","fecha_raw":null,"total_pct":67,"avg_score":2.7,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":68.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":2},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":68.75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":3},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":2}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":56.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":2},{"label":"Propuestas de valor","weight":5,"score":2}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":66.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":2},{"label":"Logística","weight":2,"score":2}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Edf invadidos y falta pop externo nabs","numero":3}]},{"nombre":"MAXIMILIANO FRANCISCO MARTIRE","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":4,"ultimo_total":87.5,"ultima_nota":"A","primer_total":80,"coachings":[{"promotor":"MAXIMILIANO FRANCISCO MARTIRE","supervisor":"Fernando Moreno","fecha":"2026-05-21","fecha_raw":null,"total_pct":80,"avg_score":3.2,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":93.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":2},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":62.5,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":2},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":2}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":93.75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"","numero":1},{"promotor":"MAXIMILIANO FRANCISCO MARTIRE","supervisor":"Fernando Moreno","fecha":"2026-06-19","fecha_raw":null,"total_pct":93.75,"avg_score":3.7,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":93.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Oportunidad en POP de nabs, crecer en cartera","numero":2},{"promotor":"MAXIMILIANO FRANCISCO MARTIRE","supervisor":"Fernando Moreno","fecha":"2026-08-05","fecha_raw":null,"total_pct":81.25,"avg_score":3.25,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":87.5,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":81.25,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":81.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Gestionar primera posicion y POP de nabs en algunos pdv","numero":3},{"promotor":"MAXIMILIANO FRANCISCO MARTIRE","supervisor":"Fernando Moreno","fecha":"2026-08-13","fecha_raw":null,"total_pct":87.5,"avg_score":3.5,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":81.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Pop externo nabs, meter mas sku nabs","numero":4}]},{"nombre":"MELINAO LUCAS","supervisores":["Roberto Seco"],"supervisor_actual":"Roberto Seco","n_coachings":3,"ultimo_total":91.25,"ultima_nota":"A","primer_total":90,"coachings":[{"promotor":"MELINAO LUCAS","supervisor":"Roberto Seco","fecha":"2026-07-31","fecha_raw":null,"total_pct":90,"avg_score":3.6,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":87.5,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":100,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":93.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Siguimiento invasión cero en equipos de frío","numero":1},{"promotor":"MELINAO LUCAS","supervisor":"Roberto Seco","fecha":"2026-06-09","fecha_raw":null,"total_pct":89.5,"avg_score":3.6,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":87.5,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":91.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":100,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"falto reforzar en vacios y dinero","numero":2},{"promotor":"MELINAO LUCAS","supervisor":"Roberto Seco","fecha":"2026-08-13","fecha_raw":null,"total_pct":91.25,"avg_score":3.7,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":87.5,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":87.5,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":93.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":93.75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"reforzar en no invacion equipo de frio","numero":3}]},{"nombre":"MILLAIN BETIANA","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":3,"ultimo_total":93.75,"ultima_nota":"A","primer_total":97,"coachings":[{"promotor":"MILLAIN BETIANA","supervisor":"Pedro Corsino","fecha":"2026-06-05","fecha_raw":null,"total_pct":97,"avg_score":3.85,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":97.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":93.75,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"comunicacion de vacios a la hora de la entrga","numero":1},{"promotor":"MILLAIN BETIANA","supervisor":"Pedro Corsino","fecha":"2026-08-05","fecha_raw":null,"total_pct":87,"avg_score":3.5,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":3},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":91.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":2},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Mejorar equipode frios","numero":2},{"promotor":"MILLAIN BETIANA","supervisor":"Pedro Corsino","fecha":"2026-04-07","fecha_raw":null,"total_pct":93.75,"avg_score":3.7,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":3},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":93.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"mejorar la exibicion de productos","numero":3}]},{"nombre":"MORA MATIAS ARIEL","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":3,"ultimo_total":76.25,"ultima_nota":"B","primer_total":79.5,"coachings":[{"promotor":"MORA MATIAS ARIEL","supervisor":"Fernando Moreno","fecha":"2026-08-27","fecha_raw":null,"total_pct":79.5,"avg_score":3.2,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":85,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Oportunidad de altas","numero":1},{"promotor":"MORA MATIAS ARIEL","supervisor":"Fernando Moreno","fecha":"2026-04-08","fecha_raw":null,"total_pct":71.25,"avg_score":2.8,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":68.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":2}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":81.25,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":68.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":2}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":62.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":2},{"label":"Marketplace","weight":3,"score":2},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":2}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Incrementar ejecucion y ccc nabs y cvz","numero":2},{"promotor":"MORA MATIAS ARIEL","supervisor":"Fernando Moreno","fecha":"2026-04-19","fecha_raw":null,"total_pct":76.25,"avg_score":3.05,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":81.25,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":81.25,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":3},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":68.75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":2},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Incrementar ccc","numero":3}]},{"nombre":"MORA MAURO","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":3,"ultimo_total":92.25,"ultima_nota":"A","primer_total":91.25,"coachings":[{"promotor":"MORA MAURO","supervisor":"Pedro Corsino","fecha":"2026-06-09","fecha_raw":null,"total_pct":91.25,"avg_score":3.7,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":93.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Acomodar heladeras de premiun a core y pesificar ung","numero":1},{"promotor":"MORA MAURO","supervisor":"Pedro Corsino","fecha":"2026-04-21","fecha_raw":null,"total_pct":89.5,"avg_score":3.55,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":87.5,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":91.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":2},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":2},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"mejorar la exibicion de productos","numero":2},{"promotor":"MORA MAURO","supervisor":"Pedro Corsino","fecha":"2026-08-06","fecha_raw":null,"total_pct":92.25,"avg_score":3.65,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":87.5,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":86.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":2},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"mejorar la nueva cartera de clientes","numero":3}]},{"nombre":"MUÑOZ DAMIAN","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":1,"ultimo_total":87.75,"ultima_nota":"A","primer_total":87.75,"coachings":[{"promotor":"MUÑOZ DAMIAN","supervisor":"Pedro Corsino","fecha":"2026-05-27","fecha_raw":null,"total_pct":87.75,"avg_score":3.5,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":81.25,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":88.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":2}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Satisfacion al cliente de rate my deliberi","numero":1}]},{"nombre":"NUÑEZ MAURO","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":3,"ultimo_total":81.25,"ultima_nota":"B","primer_total":81.25,"coachings":[{"promotor":"NUÑEZ MAURO","supervisor":"Fernando Moreno","fecha":"2026-06-05","fecha_raw":null,"total_pct":81.25,"avg_score":3.25,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":81.25,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":81.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Aumentar BD","numero":1},{"promotor":"NUÑEZ MAURO","supervisor":"Fernando Moreno","fecha":"2026-08-05","fecha_raw":null,"total_pct":78.75,"avg_score":3.15,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Dar altas , POP cvz y nabs externo","numero":2},{"promotor":"NUÑEZ MAURO","supervisor":"Fernando Moreno","fecha":"2026-04-13","fecha_raw":null,"total_pct":81.25,"avg_score":3.25,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":3},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":4},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Mejorar planograma y batallas en cervezas foco","numero":3}]},{"nombre":"ORLANDO JOSÉ REYES MORA","supervisores":["Fernando Moreno"],"supervisor_actual":"Fernando Moreno","n_coachings":3,"ultimo_total":85.5,"ultima_nota":"B","primer_total":86.25,"coachings":[{"promotor":"ORLANDO JOSÉ REYES MORA","supervisor":"Fernando Moreno","fecha":"2026-06-19","fecha_raw":null,"total_pct":86.25,"avg_score":3.45,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":93.75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":93.75,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":87.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":75,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Oportunidad de POP externo de Nabs y oportunidad en enemigo CVZ Value","numero":1},{"promotor":"ORLANDO JOSÉ REYES MORA","supervisor":"Fernando Moreno","fecha":"2026-04-27","fecha_raw":null,"total_pct":82.5,"avg_score":3.3,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":75,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":3},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":3},{"label":"Aprendizaje contínuo","weight":5,"score":3},{"label":"Resiliencia","weight":5,"score":3}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":81.25,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Incrementar ccc de cvz y nabs","numero":2},{"promotor":"ORLANDO JOSÉ REYES MORA","supervisor":"Fernando Moreno","fecha":"2026-08-28","fecha_raw":null,"total_pct":85.5,"avg_score":3.45,"grade":"B","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":87.5,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":3},{"label":"Enfoque al cliente","weight":5,"score":3}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":83.75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":3},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":3},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":4}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":81.25,"questions":[{"label":"Gestión de activos","weight":5,"score":3},{"label":"Bees Vision","weight":5,"score":4},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":3}]}],"notas":"Incrementar BD nabs","numero":3}]},{"nombre":"RODRIGO D´URSO PAEZ","supervisores":["Pedro Corsino"],"supervisor_actual":"Pedro Corsino","n_coachings":2,"ultimo_total":88.75,"ultima_nota":"A","primer_total":95.75,"coachings":[{"promotor":"RODRIGO D´URSO PAEZ","supervisor":"Pedro Corsino","fecha":"2026-05-27","fecha_raw":null,"total_pct":95.75,"avg_score":3.8,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":93.75,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":3},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":4},{"label":"Propuestas de valor","weight":5,"score":4}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":97.5,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":4},{"label":"Marketplace","weight":3,"score":4},{"label":"Compromiso BEES","weight":5,"score":4},{"label":"Logística","weight":2,"score":3}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Reforzar al cerrar cada cliente los vacios y el importe a pagar","numero":1},{"promotor":"RODRIGO D´URSO PAEZ","supervisor":"Pedro Corsino","fecha":"2026-07-06","fecha_raw":null,"total_pct":88.75,"avg_score":3.5,"grade":"A","pilares":[{"id":"blandas","name":"Competencias blandas","short":"Comp. blandas","pct":100,"questions":[{"label":"Planif y ejecución de rutina","weight":5,"score":4},{"label":"Cultura (ambición/perseverancia)","weight":5,"score":4},{"label":"Aprendizaje contínuo","weight":5,"score":4},{"label":"Resiliencia","weight":5,"score":4}]},{"id":"rutina","name":"Rutina básica del promotor","short":"Rutina básica","pct":100,"questions":[{"label":"Seguridad","weight":5,"score":4},{"label":"Productividad","weight":5,"score":4},{"label":"Gestión de cartera","weight":5,"score":4},{"label":"Enfoque al cliente","weight":5,"score":4}]},{"id":"oportunidades","name":"Detección de oportunidades","short":"Oportunidades","pct":81.25,"questions":[{"label":"Info del cliente previo a la visita","weight":5,"score":4},{"label":"Recorrido / comparación vs enemigos","weight":10,"score":3},{"label":"Propuestas de valor","weight":5,"score":3}]},{"id":"desarrollo","name":"Desarrollo de clientes","short":"Desarrollo","pct":75,"questions":[{"label":"TBD / distribución de marca","weight":5,"score":4},{"label":"NABs","weight":5,"score":3},{"label":"Marketplace","weight":3,"score":2},{"label":"Compromiso BEES","weight":5,"score":3},{"label":"Logística","weight":2,"score":2}]},{"id":"ejecucion","name":"Ejecución","short":"Ejecución","pct":87.5,"questions":[{"label":"Gestión de activos","weight":5,"score":4},{"label":"Bees Vision","weight":5,"score":3},{"label":"Lineamientos de ejecución por EDF","weight":5,"score":3},{"label":"PTC / POP sugeridos","weight":5,"score":4}]}],"notas":"Desarrollar mkpley","numero":2}]}],"generated_from":"CSV importado manualmente","n_registros":39}</script>
 
 <script>
-// ================================================================
-// STATE
-// ================================================================
-const state = {
-  objetivo: null,
-  canal: null,
-  offSubcanal: null,
-  onBase: null,
-  onClasificacion: null,
-  onFinalSubcanal: null,
-  history: []
+const DATA = JSON.parse(document.getElementById('coaching-data').textContent);
+const PILAR_COLORS = {
+  blandas:      '#2F6F5E',
+  rutina:       '#3E7CA6',
+  oportunidades:'#C98A2B',
+  desarrollo:   '#8C5EA8',
+  ejecucion:    '#B24A3A',
 };
+const GRADE_ORDER = {A:4,B:3,C:2,D:1};
 
-// ================================================================
-// NAV
-// ================================================================
-function goSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if (!state.history.includes(id)) state.history.push(id);
-  updateProgress();
-  window.scrollTo(0,0);
+let selectedVendor = null;
+let hiddenSeries = new Set(); // pilar ids hidden from chart
+
+function fmtDate(c){
+  // accepts either a coaching object ({fecha, fecha_raw}) or a plain iso string (legacy calls)
+  const iso = (c && typeof c === 'object') ? c.fecha : c;
+  const raw = (c && typeof c === 'object') ? c.fecha_raw : null;
+  if(!iso){
+    return raw || '—';
+  }
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return raw || iso;
+  return d.toLocaleDateString('es-AR', {day:'2-digit', month:'short', year:'numeric'});
 }
 
-function goNext(current) {
-
-  if (current === 's0') {
-    const vendedor = document.getElementById('f_vendedor').value;
-    if (!vendedor) {
-      showError('s0', 'Seleccioná tu nombre antes de continuar.');
-      return;
-    }
-    const obj = document.querySelector('input[name="objetivo"]:checked');
-    if (!obj) {
-      showError('s0', 'Seleccioná el objetivo del formulario.');
-      return;
-    }
-    clearError('s0');
-    state.objetivo = obj.value;
-    if (state.objetivo === 'alta') return goSection('s_alta1');
-    if (state.objetivo === 'baja') return goSection('s_baja');
-    if (state.objetivo === 'potencial') return goSection('s_potencial');
-    if (state.objetivo === 'activo') return goSection('s_activo');
-    if (state.objetivo === 'razonsocial') return goSection('s_razonsocial');
-  }
-
-  if (current === 's_alta1') {
-    const contrib = document.querySelector('input[name="contribuyente"]:checked');
-    const cuit = document.getElementById('f_cuit').value.trim();
-    const rs = document.getElementById('f_razonsocial').value.trim();
-    const loc = document.getElementById('f_localidad').value.trim();
-    const dom = document.getElementById('f_domicilio').value.trim();
-    if (!contrib) { showError('s_alta1', 'Seleccioná el tipo de contribuyente.'); return; }
-    if (!cuit)    { showError('s_alta1', 'Completá el CUIT o DNI.'); return; }
-    if (!rs)      { showError('s_alta1', 'Completá la razón social.'); return; }
-    if (!loc)     { showError('s_alta1', 'Completá la localidad.'); return; }
-    if (!dom)     { showError('s_alta1', 'Completá el domicilio.'); return; }
-    clearError('s_alta1');
-    return goSection('s_canal');
-  }
-
-  if (current === 's_canal') {
-    const c = document.querySelector('input[name="canal"]:checked');
-    if (!c) { showError('s_canal', 'Indicá si es canal ON o canal OFF.'); return; }
-    clearError('s_canal');
-    state.canal = c.value;
-    return goSection(state.canal === 'on' ? 's_on' : 's_off');
-  }
-
-  if (current === 's_off') {
-    if (!state.offSubcanal) { showError('s_off', 'Respondé todas las preguntas del árbol hasta que aparezca el subcanal detectado.'); return; }
-    clearError('s_off');
-    document.getElementById('f_subcanal').value = state.offSubcanal;
-    return goSection('s_visita');
-  }
-
-  if (current === 's_on') {
-    if (!state.onFinalSubcanal) { showError('s_on', 'Respondé todas las preguntas del árbol hasta que aparezca el subcanal detectado.'); return; }
-    clearError('s_on');
-    document.getElementById('f_subcanal').value = state.onFinalSubcanal;
-    return goSection('s_visita');
-  }
-
-  if (current === 's_visita') {
-    const dias = document.querySelectorAll('input[name="dias"]:checked');
-    if (dias.length === 0) { showError('s_visita', 'Seleccioná al menos un día de visita.'); return; }
-    clearError('s_visita');
-    return goSection('s_final');
-  }
+function trendArrow(vendor){
+  if(vendor.n_coachings < 2) return {cls:'flat', txt:'—'};
+  const diff = vendor.ultimo_total - vendor.primer_total;
+  if(diff > 1) return {cls:'up', txt:'▲ ' + diff.toFixed(1) + ' pts'};
+  if(diff < -1) return {cls:'down', txt:'▼ ' + Math.abs(diff).toFixed(1) + ' pts'};
+  return {cls:'flat', txt:'· estable'};
 }
 
-function showError(sectionId, msg) {
-  let box = document.getElementById('err_' + sectionId);
-  if (!box) {
-    box = document.createElement('div');
-    box.id = 'err_' + sectionId;
-    box.style.cssText = 'background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:0.7rem 1rem;font-size:0.88rem;color:#991B1B;margin-bottom:1rem;display:flex;align-items:center;gap:8px;';
-    const sec = document.getElementById(sectionId);
-    const navBtn = sec.querySelector('.nav-buttons');
-    sec.insertBefore(box, navBtn);
-  }
-  box.innerHTML = '⚠️ ' + msg;
-  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
+function renderSidebar(filter){
+  const list = document.getElementById('vendorList');
+  list.innerHTML = '';
+  const f = (filter || '').trim().toLowerCase();
 
-function clearError(sectionId) {
-  const box = document.getElementById('err_' + sectionId);
-  if (box) box.remove();
-}
+  const bySupervisor = {};
+  DATA.vendors.forEach(v => {
+    if(f && !v.nombre.toLowerCase().includes(f) && !v.supervisor_actual.toLowerCase().includes(f)) return;
+    (bySupervisor[v.supervisor_actual] = bySupervisor[v.supervisor_actual] || []).push(v);
+  });
 
-function goBack(current) {
-  const prev = {
-    's_alta1': 's0',
-    's_canal': 's_alta1',
-    's_off': 's_canal',
-    's_on': 's_canal',
-    's_visita': state.canal === 'on' ? 's_on' : 's_off',
-    's_final': 's_visita',
-    's_baja': 's0',
-    's_potencial': 's0',
-    's_activo': 's0',
-    's_razonsocial': 's0',
-    's_seccfinal': 's0'
-  };
-  if (prev[current]) goSection(prev[current]);
-}
-
-function updateProgress() {
-  const sections = ['s0','s_alta1','s_canal','s_off','s_on','s_visita','s_final'];
-  const active = document.querySelector('.section.active');
-  if (!active) return;
-  const idx = sections.indexOf(active.id);
-  const pct = idx < 0 ? 10 : Math.round(((idx+1)/sections.length)*100);
-  document.getElementById('progressFill').style.width = pct + '%';
-}
-
-// ================================================================
-// HELPERS
-// ================================================================
-function showSubQ(id) { document.getElementById(id).classList.add('show'); }
-function hideSubQ(id) { document.getElementById(id).classList.remove('show'); }
-function hideAllAfter(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('show'); }); }
-
-function setOffSubcanal(val) {
-  state.offSubcanal = val;
-  document.getElementById('off_subcanal_display').textContent = val;
-  document.getElementById('off_resultado').style.display = 'flex';
-  document.getElementById('btn_off_next').disabled = false;
-}
-
-function setOnFinalSubcanal(base, clas) {
-  state.onBase = base;
-  state.onClasificacion = clas || state.onClasificacion;
-  if (!state.onClasificacion) {
-    showSubQ('on_clasificacion');
+  const supNames = Object.keys(bySupervisor).sort();
+  if(supNames.length === 0){
+    list.innerHTML = '<div style="padding:16px 10px; font-size:12.5px; color:var(--ink-faint);">Sin resultados.</div>';
     return;
   }
-  const c = state.onClasificacion;
-  let prefix = c === 'cadena' ? 'CADENA' : c === 'top' ? 'TOP' : c === 'base' ? 'BASE' : 'REG';
-  const final = prefix + ' - ' + base;
-  state.onFinalSubcanal = final;
-  document.getElementById('on_subcanal_display').textContent = final;
-  document.getElementById('on_resultado').style.display = 'flex';
-  document.getElementById('btn_on_next').disabled = false;
-}
 
-// ================================================================
-// ÁRBOL OFF
-// ================================================================
-function offStep1() {
-  const v = document.querySelector('input[name="comprador"]:checked')?.value;
-  hideAllAfter(['off_mayorista','off_esenciales','off_cereales','off_local','off_golosinas','off_bebidas','off_frescos','off_elaborados','off_medicamentos','off_resultado']);
-  state.offSubcanal = null;
-  document.getElementById('btn_off_next').disabled = true;
-  document.getElementById('off_resultado').style.display = 'none';
-  if (v === 'otros_y_cf') { showSubQ('off_mayorista'); }
-  else if (v === 'cf') { showSubQ('off_esenciales'); }
-}
+  supNames.forEach(sup => {
+    const group = document.createElement('div');
+    group.className = 'sup-group';
+    const label = document.createElement('div');
+    label.className = 'sup-group-label';
+    label.textContent = sup;
+    group.appendChild(label);
 
-function offStepMayorista() {
-  const v = document.querySelector('input[name="salon"]:checked')?.value;
-  if (v === 'si') setOffSubcanal('MAYORISTA SALÓN');
-  else if (v === 'no') setOffSubcanal('MAYORISTA DEPÓSITO');
-}
-
-function offStep2b() {
-  const v = document.querySelector('input[name="esenciales"]:checked')?.value;
-  hideAllAfter(['off_cereales','off_local','off_golosinas','off_bebidas','off_frescos','off_elaborados','off_medicamentos']);
-  if (v === 'si') showSubQ('off_cereales');
-  else if (v === 'no') showSubQ('off_golosinas');
-}
-
-function offStep3() {
-  const v = document.querySelector('input[name="cereales"]:checked')?.value;
-  if (v === 'si') setOffSubcanal('DIETÉTICA');
-  else showSubQ('off_local');
-}
-
-function offStep4() {
-  const v = document.querySelector('input[name="ingreso"]:checked')?.value;
-  hideAllAfter(['off_local_tipo']);
-  if (v === 'no') setOffSubcanal('ALMACÉN VENTANA');
-  else showSubQ('off_local_tipo');
-}
-
-function offSetSubcanalLocal() {
-  const v = document.querySelector('input[name="tipolocal"]:checked')?.value;
-  const map = { almacen: 'ALMACÉN', almacen_autoservice: 'ALMACÉN AUTOSERVICIO', autoservice: 'AUTOSERVICIO', almacen_autoservice_virtual: 'ALMACÉN AUTOSERVICIO' };
-  if (map[v]) setOffSubcanal(map[v]);
-}
-
-function offStep5() {
-  const v = document.querySelector('input[name="golosinas"]:checked')?.value;
-  hideAllAfter(['off_golosinas_tipo','off_kiosco_tipo','off_bebidas','off_frescos','off_elaborados','off_medicamentos']);
-  if (v === 'si') showSubQ('off_golosinas_tipo');
-  else { showSubQ('off_bebidas'); }
-}
-
-function offSetSubcanalGolosinas() {
-  const v = document.querySelector('input[name="tipogolosinas"]:checked')?.value;
-  hideAllAfter(['off_kiosco_tipo']);
-  if (v === 'estacion_servicio') setOffSubcanal('ESTACIÓN DE SERVICIO');
-  else showSubQ('off_kiosco_tipo');
-}
-
-function offSetSubcanalKiosco() {
-  const v = document.querySelector('input[name="kioscoingreso"]:checked')?.value;
-  if (v === 'si') setOffSubcanal('KIOSCO/MAXIKIOSCO');
-  else setOffSubcanal('KIOSCO VENTANA');
-}
-
-function offStep6() {
-  const v = document.querySelector('input[name="bebidas"]:checked')?.value;
-  hideAllAfter(['off_bebidas_tipo','off_frescos','off_elaborados','off_medicamentos']);
-  if (v === 'si') showSubQ('off_bebidas_tipo');
-  else showSubQ('off_frescos');
-}
-
-function offSetSubcanalBebidas() {
-  const v = document.querySelector('input[name="tipobebidas"]:checked')?.value;
-  const map = { vinoteca: 'VINOTECA', tienda_bebidas: 'TIENDA DE BEBIDAS', deposito_tienda_virtual: 'DEPÓSITO TIENDA VIRTUAL' };
-  if (map[v]) setOffSubcanal(map[v]);
-}
-
-function offStep7() {
-  const v = document.querySelector('input[name="frescos"]:checked')?.value;
-  hideAllAfter(['off_frescos_tipo','off_elaborados','off_medicamentos']);
-  if (v === 'si') showSubQ('off_frescos_tipo');
-  else showSubQ('off_elaborados');
-}
-
-function offSetSubcanalFrescos() {
-  const v = document.querySelector('input[name="tipofrescos"]:checked')?.value;
-  const map = { verduleria: 'VERDULERÍA', carniceria: 'CARNICERÍA/POLLERÍA', pescaderia: 'PESCADERÍA', fiambreria: 'FIAMBRERÍA/QUESERÍA', casa_pastas: 'CASA DE PASTAS' };
-  if (map[v]) setOffSubcanal(map[v]);
-}
-
-function offStep8() {
-  const v = document.querySelector('input[name="elaborados"]:checked')?.value;
-  hideAllAfter(['off_elaborados_tipo','off_medicamentos']);
-  if (v === 'si') showSubQ('off_elaborados_tipo');
-  else showSubQ('off_medicamentos');
-}
-
-function offSetSubcanalElaborados() {
-  const v = document.querySelector('input[name="tipoelaborados"]:checked')?.value;
-  if (v === 'rotiseria') setOffSubcanal('ROTISERÍA/COMIDA PARA LLEVAR');
-  else if (v === 'panaderia') setOffSubcanal('PANADERÍA/PASTELERÍA');
-}
-
-function offSetSubcanalMedicamentos(val) { setOffSubcanal(val); }
-
-function offStep9noMatch() {
-  setOffSubcanal('SIN CLASIFICAR - Revisar con administración');
-}
-
-// ================================================================
-// ÁRBOL ON — lógica exacta del árbol de decisión
-// ================================================================
-
-const ON_IDS = ['on_p_mayorista','on_p_baile','on_p_bar','on_p_gastro',
-  'on_p_pizza','on_p_hambur','on_p_cafe','on_p_rest','on_p_alpaso',
-  'on_p_cadglobal','on_p_cadlocal',
-  'on_p_actividad','on_p_deporte','on_p_hotel','on_p_casino','on_p_edu',
-  'on_p_eventos','on_p_cultural','on_p_shopping','on_p_transporte','on_p_estserv','on_p_clasif'];
-
-function onHideAll() {
-  ON_IDS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('show');
-    el.querySelectorAll('input[type=radio]').forEach(r => {
-      r.checked = false;
-      const opt = r.closest('.radio-opt');
-      if (opt) opt.classList.remove('selected');
+    bySupervisor[sup].sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(v => {
+      const item = document.createElement('div');
+      item.className = 'vendor-item' + (selectedVendor === v.nombre ? ' active' : '');
+      const tr = trendArrow(v);
+      item.innerHTML = `
+        <span class="badge badge-${v.ultima_nota}">${v.ultima_nota}</span>
+        <span class="name">${v.nombre}<br><span class="meta">${v.n_coachings} coaching${v.n_coachings>1?'s':''} · <span class="trend ${tr.cls}">${tr.txt}</span></span></span>
+      `;
+      item.addEventListener('click', () => selectVendor(v.nombre));
+      group.appendChild(item);
     });
-  });
-  state.onFinalSubcanal = null;
-  state.onBase = null;
-  document.getElementById('on_resultado').style.display = 'none';
-  document.getElementById('btn_on_next').disabled = true;
-  const td = document.getElementById('on_tipo_display');
-  if (td) td.textContent = '—';
-  // Ocultar avisos
-  ['on_aviso_nocturno','on_aviso_gastro'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+    list.appendChild(group);
   });
 }
 
-function onHideFrom(fromId) {
-  const idx = ON_IDS.indexOf(fromId);
-  if (idx < 0) return;
-  ON_IDS.slice(idx).forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('show');
-    el.querySelectorAll('input[type=radio]').forEach(r => {
-      r.checked = false;
-      const opt = r.closest('.radio-opt');
-      if (opt) opt.classList.remove('selected');
+function selectVendor(name){
+  selectedVendor = name;
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  renderSidebar(document.getElementById('searchInput').value);
+  renderDetail(name);
+}
+
+function renderDetail(name){
+  const vendor = DATA.vendors.find(v => v.nombre === name);
+  const view = document.getElementById('detailView');
+  const last = vendor.coachings[vendor.coachings.length - 1];
+  const tr = trendArrow(vendor);
+
+  view.innerHTML = `
+    <div class="head-row">
+      <div class="vendor-title">
+        <h2>${vendor.nombre}</h2>
+        <div class="sub">Supervisor actual: <b>${vendor.supervisor_actual}</b> &nbsp;·&nbsp; ${vendor.n_coachings} coaching${vendor.n_coachings>1?'s':''} registrado${vendor.n_coachings>1?'s':''}</div>
+      </div>
+      <div class="cap-hero">
+        <div class="cap-badge g-${last.grade}"><div class="cap-inner">${last.grade}</div></div>
+        <div class="cap-text">Último coaching<span class="pct num">${last.total_pct.toFixed(1)}%</span></div>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="label">Coachings realizados</div>
+        <div class="value num">${vendor.n_coachings}</div>
+        <div class="sub">${fmtDate(vendor.coachings[0])} → ${fmtDate(last)}</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Puntaje actual</div>
+        <div class="value num">${last.total_pct.toFixed(1)}%</div>
+        <div class="sub">Nota ${last.grade} · promedio ${last.avg_score.toFixed(2)}/4</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Evolución</div>
+        <div class="value num ${tr.cls==='up'?'':(tr.cls==='down'?'':'')}" style="color:${tr.cls==='up'?'var(--grade-a)':tr.cls==='down'?'var(--grade-d)':'var(--ink)'}">${tr.txt}</div>
+        <div class="sub">vs. primer coaching (${last.total_pct >= vendor.primer_total ? '+' : ''}${(last.total_pct - vendor.primer_total).toFixed(1)} pts)</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Pilar más débil (último)</div>
+        <div class="value num">${weakestPilar(last).pct.toFixed(0)}%</div>
+        <div class="sub">${weakestPilar(last).short}</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Evolución del puntaje</h3>
+      <p class="panel-sub">Total y desglose por pilar en cada coaching. Tocá una etiqueta para mostrar u ocultar esa serie.</p>
+      <div class="chart-wrap"><div id="trendChart"></div></div>
+      <div class="legend-toggle" id="legendToggle"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Historial de coachings</h3>
+      <p class="panel-sub">Detalle cronológico, comentarios del supervisor y puntaje por pilar.</p>
+      <table class="hist">
+        <thead>
+          <tr><th>#</th><th>Fecha</th><th>Supervisor</th><th>Total</th><th>Nota</th><th>Puntos a mejorar</th></tr>
+        </thead>
+        <tbody>
+          ${vendor.coachings.slice().reverse().map(c => renderHistRow(c)).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="foot">Generado a partir de las respuestas del formulario de coaching · ${vendor.coachings.length} registro(s) para ${vendor.nombre}</footer>
+  `;
+
+  hiddenSeries = new Set();
+  buildChart(vendor);
+  buildLegend(vendor);
+}
+
+function weakestPilar(coaching){
+  return coaching.pilares.reduce((min, p) => p.pct < min.pct ? p : min, coaching.pilares[0]);
+}
+
+function renderHistRow(c){
+  const notes = c.notas && c.notas.length
+    ? `<div class="notes-cell">${escapeHtml(c.notas)}</div>`
+    : `<div class="notes-cell empty">Sin observaciones</div>`;
+  const pilarGrid = `
+    <div class="pilar-grid">
+      ${c.pilares.map(p => `
+        <div class="pilar-cell">
+          <div class="pn">${p.short}</div>
+          <div class="pv num" style="color:${PILAR_COLORS[p.id]}">${p.pct.toFixed(0)}%</div>
+        </div>
+      `).join('')}
+    </div>
+    ${c.pilares.map(p => `
+      <details class="q-detail">
+        <summary>${p.name} — detalle de preguntas</summary>
+        <ul class="q-list">
+          ${p.questions.map(q => `<li><span>${q.label}</span><span class="q-score">${q.score.toFixed(0)}/4</span></li>`).join('')}
+        </ul>
+      </details>
+    `).join('')}
+  `;
+  return `
+    <tr>
+      <td class="hist-num num">${c.numero}</td>
+      <td class="num">${fmtDate(c)}</td>
+      <td class="sup-tag">${c.supervisor}</td>
+      <td class="hist-num num">${c.total_pct.toFixed(1)}%</td>
+      <td><span class="badge badge-${c.grade}">${c.grade}</span></td>
+      <td>${notes}${pilarGrid}</td>
+    </tr>
+  `;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function buildChart(vendor){
+  const holder = document.getElementById('trendChart');
+  const W = 900, H = 280;
+  const padL = 34, padR = 14, padT = 12, padB = 30;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  const n = vendor.coachings.length;
+  const xAt = (i) => n === 1 ? padL + plotW/2 : padL + (plotW * i) / (n - 1);
+  const yAt = (v) => padT + plotH - (plotH * v) / 100;
+
+  const series = [
+    {
+      key: 'total',
+      label: 'Total',
+      color: '#1B231F',
+      dash: '',
+      width: 3,
+      radius: 4,
+      data: vendor.coachings.map(c => c.total_pct),
+    },
+    ...DATA.pilares_meta.map(pm => ({
+      key: pm.id,
+      label: pm.short,
+      color: PILAR_COLORS[pm.id],
+      dash: '4,3',
+      width: 1.75,
+      radius: 2.75,
+      data: vendor.coachings.map(c => c.pilares.find(p => p.id === pm.id).pct),
+    }))
+  ];
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+
+  // gridlines + y labels
+  [0,20,40,60,80,100].forEach(v => {
+    const y = yAt(v);
+    svg += `<line class="gridline" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>`;
+    svg += `<text class="axis-label" x="${padL-8}" y="${y+3}" text-anchor="end">${v}%</text>`;
+  });
+
+  // x labels
+  vendor.coachings.forEach((c,i) => {
+    const x = xAt(i);
+    svg += `<text class="x-label" x="${x}" y="${H-8}" text-anchor="middle">#${c.numero} · ${fmtDate(c)}</text>`;
+  });
+
+  // series lines + points
+  series.forEach(s => {
+    const pts = s.data.map((v,i) => `${xAt(i)},${yAt(v)}`).join(' ');
+    const hidden = hiddenSeries.has(s.key);
+    svg += `<g class="series-group" data-key="${s.key}" style="${hidden ? 'display:none' : ''}">`;
+    svg += `<polyline class="series-line" points="${pts}" stroke="${s.color}" stroke-width="${s.width}" stroke-dasharray="${s.dash}"/>`;
+    s.data.forEach((v,i) => {
+      svg += `<circle class="series-point" cx="${xAt(i)}" cy="${yAt(v)}" r="${s.radius}" fill="${s.color}" stroke="${s.color}"><title>${s.label} — Coaching #${vendor.coachings[i].numero} (${fmtDate(vendor.coachings[i])}): ${v.toFixed(1)}%</title></circle>`;
+    });
+    svg += `</g>`;
+  });
+
+  svg += `</svg>`;
+  holder.innerHTML = svg;
+}
+
+function buildLegend(vendor){
+  const wrap = document.getElementById('legendToggle');
+  const items = [
+    {key:'total', label:'Total', color:'#1B231F'},
+    ...DATA.pilares_meta.map(pm => ({key:pm.id, label:pm.short, color:PILAR_COLORS[pm.id]}))
+  ];
+  wrap.innerHTML = items.map(it => `
+    <span class="legend-chip ${hiddenSeries.has(it.key)?'off':''}" data-key="${it.key}">
+      <span class="dot" style="background:${it.color}"></span>${it.label}
+    </span>
+  `).join('');
+  wrap.querySelectorAll('.legend-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key = chip.dataset.key;
+      if(hiddenSeries.has(key)) hiddenSeries.delete(key); else hiddenSeries.add(key);
+      chip.classList.toggle('off');
+      const grp = document.querySelector(`.series-group[data-key="${key}"]`);
+      if(grp) grp.style.display = hiddenSeries.has(key) ? 'none' : '';
     });
   });
-  state.onFinalSubcanal = null;
-  state.onBase = null;
-  document.getElementById('on_resultado').style.display = 'none';
-  document.getElementById('btn_on_next').disabled = true;
-  // Ocultar avisos que dependan de lo que sigue
-  const avisoGastro = document.getElementById('on_aviso_gastro');
-  if (avisoGastro && ON_IDS.indexOf('on_p_cadlocal') >= idx) avisoGastro.style.display = 'none';
 }
 
-function onShow(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.add('show');
-    setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
-  }
-  // Mostrar aviso si llegan al final de la rama nocturna sin match
-  if (id === 'on_p_bar') {
-    setTimeout(() => {
-      const aviso = document.getElementById('on_aviso_nocturno');
-      if (aviso) aviso.style.display = 'block';
-    }, 300);
-  }
-}
-
-function onSetBase(tipo) {
-  // Si el tipo cambió, limpiar clasificación y resultado
-  if (state.onBase !== tipo) {
-    state.onBase = tipo;
-    state.onFinalSubcanal = null;
-    // Limpiar solo la clasificación
-    const clasifEl = document.getElementById('on_p_clasif');
-    if (clasifEl) {
-      clasifEl.querySelectorAll('input[type=radio]').forEach(r => {
-        r.checked = false;
-        const opt = r.closest('.radio-opt');
-        if (opt) opt.classList.remove('selected');
-      });
-    }
-    document.getElementById('on_resultado').style.display = 'none';
-    document.getElementById('btn_on_next').disabled = true;
-  } else {
-    state.onBase = tipo;
-  }
-  const td = document.getElementById('on_tipo_display');
-  if (td) td.textContent = tipo;
-  onShow('on_p_clasif');
-}
-
-function onFinalizar(tipo, clasif) {
-  const map = { cadena:'CADENA', top:'TOP', base:'BASE', reg:'REG' };
-  const prefix = map[clasif] || 'REG';
-  state.onFinalSubcanal = prefix + ' - ' + tipo;
-  const disp = document.getElementById('on_subcanal_display');
-  if (disp) disp.textContent = state.onFinalSubcanal;
-  const res = document.getElementById('on_resultado');
-  if (res) { res.style.display = 'flex'; res.style.alignItems = 'center'; res.style.gap = '12px'; }
-  const btn = document.getElementById('btn_on_next');
-  if (btn) btn.disabled = false;
-}
-
-// P1: Nocturno — PRIMERA PREGUNTA
-function on_nocturno() {
-  const v = document.querySelector('input[name="on_nocturno"]:checked')?.value;
-  onHideFrom('on_p_mayorista');
-  // Ocultar aviso de rama nocturna
-  const aviso = document.getElementById('on_aviso_nocturno');
-  if (aviso) aviso.style.display = 'none';
-  if (v === 'si') onShow('on_p_baile');
-  else if (v === 'no') onShow('on_p_gastro');
-}
-
-// P2: Baile/música → BOLICHE (si=sí) o → BAR (si=no)
-function on_baile() {
-  const v = document.querySelector('input[name="on_baile"]:checked')?.value;
-  onHideFrom('on_p_bar');
-  if (v === 'si') onSetBase('BOLICHE');
-  else onShow('on_p_bar');
-}
-
-// P3: Bar → BAR. Si no es bar, mostrar aviso para volver a nocturno
-function on_bar() {
-  const v = document.querySelector('input[name="on_bar"]:checked')?.value;
-  onHideFrom('on_p_clasif');
-  if (v === 'si') {
-    document.getElementById('on_aviso_nocturno').style.display = 'none';
-    onSetBase('BAR');
-  }
-}
-
-// Mostrar aviso cuando se carga la sección bar sin selección
-function on_mostrar_aviso_bar() {
-  const aviso = document.getElementById('on_aviso_nocturno');
-  if (aviso) aviso.style.display = 'block';
-}
-
-// P4: Gastronomía
-function on_gastro() {
-  const v = document.querySelector('input[name="on_gastro"]:checked')?.value;
-  onHideFrom('on_p_pizza');
-  if (v === 'si') onShow('on_p_pizza');
-  else onShow('on_p_actividad');
-}
-
-// P5: Pizza
-function on_pizza() {
-  const v = document.querySelector('input[name="on_pizza"]:checked')?.value;
-  onHideFrom('on_p_hambur');
-  if (v === 'si') onSetBase('PIZZERÍA');
-  else onShow('on_p_hambur');
-}
-
-// P6: Hamburguesería
-function on_hambur() {
-  const v = document.querySelector('input[name="on_hambur"]:checked')?.value;
-  onHideFrom('on_p_cafe');
-  if (v === 'si') onSetBase('HAMBURGUESERÍA');
-  else onShow('on_p_cafe');
-}
-
-// P7: Café
-function on_cafe() {
-  const v = document.querySelector('input[name="on_cafe"]:checked')?.value;
-  onHideFrom('on_p_rest');
-  if (v === 'si') onSetBase('CAFÉ/CONFITERÍA');
-  else onShow('on_p_rest');
-}
-
-// P8: Restaurante → SI=RESTAURANTE, NO→ preguntar al paso
-function on_rest() {
-  const v = document.querySelector('input[name="on_rest"]:checked')?.value;
-  onHideFrom('on_p_alpaso');
-  if (v === 'si') onSetBase('RESTAURANTE');
-  else onShow('on_p_alpaso');
-}
-
-// P8b: Al paso → SI=OTROS MEALS, NO→ cadena global
-function on_alpaso() {
-  const v = document.querySelector('input[name="on_alpaso"]:checked')?.value;
-  onHideFrom('on_p_cadglobal');
-  const aviso = document.getElementById('on_aviso_gastro');
-  if (aviso) aviso.style.display = 'none';
-  if (v === 'si') onSetBase('OTROS MEALS');
-  else onShow('on_p_cadglobal');
-}
-
-// Cadena global → SI=CADENA GLOBAL (sin top/base/reg), NO→ cadena local
-function on_cadglobal() {
-  const v = document.querySelector('input[name="on_cadglobal"]:checked')?.value;
-  onHideFrom('on_p_cadlocal');
-  if (v === 'si') {
-    state.onFinalSubcanal = 'CADENA GLOBAL';
-    document.getElementById('on_subcanal_display').textContent = 'CADENA GLOBAL';
-    document.getElementById('on_resultado').style.display = 'flex';
-    document.getElementById('btn_on_next').disabled = false;
-    state.onBase = 'CADENA GLOBAL';
-  } else onShow('on_p_cadlocal');
-}
-
-// Cadena local → SI=CADENA LOCAL (sin clasif), NO→ OTROS MEALS con clasif + cartel
-function on_cadlocal() {
-  const v = document.querySelector('input[name="on_cadlocal"]:checked')?.value;
-  onHideFrom('on_p_clasif');
-  if (v === 'si') {
-    state.onFinalSubcanal = 'CADENA LOCAL';
-    document.getElementById('on_subcanal_display').textContent = 'CADENA LOCAL';
-    document.getElementById('on_resultado').style.display = 'flex';
-    document.getElementById('btn_on_next').disabled = false;
-    state.onBase = 'CADENA LOCAL';
-  } else {
-    // OTROS MEALS → pedir clasificación + mostrar cartel
-    onSetBase('OTROS MEALS');
-    const aviso = document.getElementById('on_aviso_gastro');
-    if (aviso) aviso.style.display = 'block';
-  }
-}
-
-// P9: Actividad principal
-function on_actividad() {
-  const v = document.querySelector('input[name="on_actividad"]:checked')?.value;
-  onHideFrom('on_p_deporte');
-  if (v === 'si') onShow('on_p_deporte');
-  else onShow('on_p_estserv');
-}
-
-// P10: Deporte
-function on_deporte() {
-  const v = document.querySelector('input[name="on_deporte"]:checked')?.value;
-  onHideFrom('on_p_hotel');
-  if (v === 'si') onSetBase('DEPORTE');
-  else onShow('on_p_hotel');
-}
-
-// P11: Hotel
-function on_hotel() {
-  const v = document.querySelector('input[name="on_hotel"]:checked')?.value;
-  onHideFrom('on_p_casino');
-  if (v === 'si') onSetBase('HOTEL');
-  else onShow('on_p_casino');
-}
-
-// P12: Casino (antes que educación)
-function on_casino() {
-  const v = document.querySelector('input[name="on_casino"]:checked')?.value;
-  onHideFrom('on_p_edu');
-  if (v === 'si') onSetBase('CASINO/JUEGOS');
-  else onShow('on_p_edu');
-}
-
-// P13: Educación
-function on_edu() {
-  const v = document.querySelector('input[name="on_edu"]:checked')?.value;
-  onHideFrom('on_p_eventos');
-  if (v === 'si') onSetBase('EDUCACIÓN');
-  else onShow('on_p_eventos');
-}
-
-// P14: Eventos (antes que cultural)
-function on_eventos() {
-  const v = document.querySelector('input[name="on_eventos"]:checked')?.value;
-  onHideFrom('on_p_cultural');
-  if (v === 'si') onSetBase('EVENTOS');
-  else onShow('on_p_cultural');
-}
-
-// P15: Cultural → NO = shopping
-function on_cultural() {
-  const v = document.querySelector('input[name="on_cultural"]:checked')?.value;
-  onHideFrom('on_p_shopping');
-  if (v === 'si') onSetBase('OTROS ENTRETENIMIENTOS');
-  else onShow('on_p_shopping');
-}
-
-// P16: Shopping → SI=CADENA SHOPPING directo (sin clasif), NO→ transporte
-function on_shopping() {
-  const v = document.querySelector('input[name="on_shopping"]:checked')?.value;
-  onHideFrom('on_p_transporte');
-  if (v === 'si') {
-    state.onFinalSubcanal = 'CADENA SHOPPING';
-    document.getElementById('on_subcanal_display').textContent = 'CADENA SHOPPING';
-    document.getElementById('on_resultado').style.display = 'flex';
-    document.getElementById('btn_on_next').disabled = false;
-    state.onBase = 'CADENA SHOPPING';
-  } else onShow('on_p_transporte');
-}
-
-// P17: Transporte → SI=CADENA TRANSPORTE directo (sin clasif), NO→ estserv
-function on_transporte() {
-  const v = document.querySelector('input[name="on_transporte"]:checked')?.value;
-  onHideFrom('on_p_estserv');
-  if (v === 'si') {
-    state.onFinalSubcanal = 'CADENA TRANSPORTE';
-    document.getElementById('on_subcanal_display').textContent = 'CADENA TRANSPORTE';
-    document.getElementById('on_resultado').style.display = 'flex';
-    document.getElementById('btn_on_next').disabled = false;
-    state.onBase = 'CADENA TRANSPORTE';
-  } else onShow('on_p_estserv');
-}
-
-// P18: Estación de servicio ON → SI=EST.SERV, NO→ Mayorista ON
-function on_estserv() {
-  const v = document.querySelector('input[name="on_estserv"]:checked')?.value;
-  onHideFrom('on_p_mayorista');
-  if (v === 'si') onSetBase('ESTACIÓN DE SERVICIO ON');
-  else onShow('on_p_mayorista');
-}
-
-// Mayorista ON → SI=MAYORISTA ON directo (sin clasif), NO=OTROS ENTRETENIMIENTOS
-function on_mayorista() {
-  const v = document.querySelector('input[name="on_mayorista"]:checked')?.value;
-  onHideFrom('on_p_clasif');
-  if (v === 'si') {
-    state.onFinalSubcanal = 'MAYORISTA ON';
-    document.getElementById('on_subcanal_display').textContent = 'MAYORISTA ON';
-    document.getElementById('on_resultado').style.display = 'flex';
-    document.getElementById('btn_on_next').disabled = false;
-    state.onBase = 'MAYORISTA ON';
-  } else {
-    onSetBase('OTROS ENTRETENIMIENTOS');
-  }
-}
-
-// Clasificación final TOP/REG/BASE/CADENA
-function on_clasif() {
-  const v = document.querySelector('input[name="on_clasif"]:checked')?.value;
-  if (v && state.onBase) onFinalizar(state.onBase, v);
-}
-
-// ================================================================
-// RADIO / CHECKBOX styling
-// ================================================================
-document.addEventListener('change', function(e) {
-  if (e.target.type === 'radio') {
-    const name = e.target.name;
-    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-      r.closest('.radio-opt')?.classList.remove('selected');
-    });
-    e.target.closest('.radio-opt')?.classList.add('selected');
-  }
-  if (e.target.type === 'checkbox') {
-    e.target.closest('.check-opt')?.classList.toggle('selected', e.target.checked);
-  }
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  renderSidebar(e.target.value);
 });
 
-// ================================================================
-// CONFIGURACIÓN — PEGÁ TU URL DE APPS SCRIPT ACÁ
-// ================================================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYB_ZHQmjX-eVT3ozzTKIhbWYCjR6VnecYBqU9qjB9wWMHlRfYxv_iGQ7ba8m_Dxq-/exec";
+renderSidebar('');
 
-// ================================================================
-// SUBMIT
-// ================================================================
-function submitForm() {
-  const vendedor = document.getElementById('f_vendedor').value;
-  if (!vendedor) { alert('Por favor seleccioná el nombre del vendedor.'); return; }
+/* ============================================================
+   ACTUALIZAR BASE — importar CSV exportado del formulario y
+   recalcular todo del lado del cliente (sin servidor, sin libs)
+   ============================================================ */
 
-  // Recolectar todos los datos del formulario
-  const diasChecked = [...document.querySelectorAll('input[name="dias"]:checked')].map(c => c.value);
+const PILARES_DEF = [
+  { id:'blandas', name:'Competencias blandas', short:'Comp. blandas',
+    questions:[
+      {label:'Planif y ejecución de rutina', weight:5},
+      {label:'Cultura (ambición/perseverancia)', weight:5},
+      {label:'Aprendizaje contínuo', weight:5},
+      {label:'Resiliencia', weight:5},
+    ]},
+  { id:'rutina', name:'Rutina básica del promotor', short:'Rutina básica',
+    questions:[
+      {label:'Seguridad', weight:5},
+      {label:'Productividad', weight:5},
+      {label:'Gestión de cartera', weight:5},
+      {label:'Enfoque al cliente', weight:5},
+    ]},
+  { id:'oportunidades', name:'Detección de oportunidades', short:'Oportunidades',
+    questions:[
+      {label:'Info del cliente previo a la visita', weight:5},
+      {label:'Recorrido / comparación vs enemigos', weight:10},
+      {label:'Propuestas de valor', weight:5},
+    ]},
+  { id:'desarrollo', name:'Desarrollo de clientes', short:'Desarrollo',
+    questions:[
+      {label:'TBD / distribución de marca', weight:5},
+      {label:'NABs', weight:5},
+      {label:'Marketplace', weight:3},
+      {label:'Compromiso BEES', weight:5},
+      {label:'Logística', weight:2},
+    ]},
+  { id:'ejecucion', name:'Ejecución', short:'Ejecución',
+    questions:[
+      {label:'Gestión de activos', weight:5},
+      {label:'Bees Vision', weight:5},
+      {label:'Lineamientos de ejecución por EDF', weight:5},
+      {label:'PTC / POP sugeridos', weight:5},
+    ]},
+];
 
-  const datos = {
-    vendedor:          vendedor,
-    objetivo:          state.objetivo || "",
-    contacto:          document.getElementById('f_contacto')?.value || "",
-    horario:           document.getElementById('f_horario')?.value || "",
-    alcohol:           document.querySelector('input[name="alcohol"]:checked')?.value || "",
-    segundavuelta:     document.querySelector('input[name="segundavuelta"]:checked')?.value || "",
-    // Alta
-    excliente:         document.querySelector('input[name="excliente"]:checked')?.value || "",
-    contribuyente:     document.querySelector('input[name="contribuyente"]:checked')?.value || "",
-    cuit:              document.getElementById('f_cuit')?.value || "",
-    razonsocial:       document.getElementById('f_razonsocial')?.value || "",
-    fantasia:          document.getElementById('f_fantasia')?.value || "",
-    localidad:         document.getElementById('f_localidad')?.value || "",
-    domicilio:         document.getElementById('f_domicilio')?.value || "",
-    canal:             state.canal || "",
-    subcanal:          document.getElementById('f_subcanal')?.value || "",
-    subcanal_cliente:  document.getElementById('f_subcanal_cliente')?.value || "",
-    dias_visita:       diasChecked.join(", "),
-    comentario:        document.getElementById('f_comentario_alta')?.value || document.getElementById('f_comentario_final')?.value || "",
-    // Baja
-    baja_codigo:       document.getElementById('f_baja_codigo')?.value || "",
-    baja_motivo:       document.getElementById('f_baja_motivo')?.value || "",
-    // Potencial
-    pot_nombre:        document.getElementById('f_pot_nombre')?.value || "",
-    pot_motivo:        document.querySelector('input[name="pot_motivo"]:checked')?.value || "",
-    // Activo
-    activo_codigo:     document.getElementById('f_activo_codigo')?.value || "",
-    activo_comentario: document.getElementById('f_activo_comentario')?.value || "",
-    // Razón social
-    rs_codigo:         document.getElementById('f_rs_codigo')?.value || "",
-    rs_nueva:          document.getElementById('f_rs_nueva')?.value || "",
-    rs_contribuyente:  document.querySelector('input[name="rs_contrib"]:checked')?.value || "",
-    rs_cuit:           document.getElementById('f_rs_cuit')?.value || "",
-    rs_motivo:         document.querySelector('input[name="rs_motivo"]:checked')?.value === 'otro'
-                         ? (document.getElementById('f_rs_otro')?.value || 'otro')
-                         : (document.querySelector('input[name="rs_motivo"]:checked')?.value || ""),
+function gradeFor(avgScore){
+  if(avgScore < 1.5) return 'D';
+  if(avgScore < 2.5) return 'C';
+  if(avgScore < 3.5) return 'B';
+  return 'A';
+}
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  // strip BOM if present
+  if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  for(let i=0; i<text.length; i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\r'){ /* skip, \n handles the break */ }
+      else if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r[0] && r[0].trim() !== ''));
+}
+
+function normName(s){
+  return (s || '').trim().replace(/\s+/g, ' ');
+}
+
+// best-effort date parsing for display only; sorting always uses row order
+function parseDateLabel(raw){
+  if(!raw) return null;
+  const s = raw.trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m){
+    let d = +m[1], mo = +m[2], y = +m[3];
+    if(d > 12 && mo <= 12){ /* d/m/y, keep */ }
+    else if(mo > 12 && d <= 12){ const t = d; d = mo; mo = t; } // swap if only that order valid
+    return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  return null; // unrecognized — will fall back to raw text
+}
+
+function processCSVRows(rows){
+  if(rows.length < 2) throw new Error('El archivo no tiene filas de respuestas.');
+  const dataRows = rows.slice(1); // skip header
+  const byVendor = {};
+  let nOk = 0;
+
+  dataRows.forEach(r => {
+    if(r.length < 24) return; // fila incompleta, se ignora
+    const rawDate = r[0];
+    const supervisor = normName(r[1]);
+    const promotor = normName(r[2]);
+    if(!promotor) return;
+    const rawScores = r.slice(3, 23).map(v => parseFloat(v));
+    if(rawScores.some(v => isNaN(v))) return; // coaching incompleto, se ignora
+    let notas = (r[23] || '').trim();
+    if(['.', '-', ''].includes(notas)) notas = '';
+
+    let idx = 0;
+    const pilares = [];
+    let totalPct = 0;
+    PILARES_DEF.forEach(p => {
+      let pts = 0;
+      const maxPts = p.questions.reduce((a,q) => a + q.weight, 0);
+      const qDetail = [];
+      p.questions.forEach(q => {
+        const score = rawScores[idx];
+        pts += (q.weight / 4) * score;
+        qDetail.push({label: q.label, weight: q.weight, score});
+        idx++;
+      });
+      pilares.push({ id:p.id, name:p.name, short:p.short, pct: Math.round((pts / maxPts) * 10000)/100, questions: qDetail });
+      totalPct += pts;
+    });
+
+    const avgScore = rawScores.reduce((a,b)=>a+b,0) / 20;
+    const isoDate = parseDateLabel(rawDate);
+
+    const coaching = {
+      promotor, supervisor,
+      fecha: isoDate,
+      fecha_raw: isoDate ? null : (rawDate || '').split(' ')[0],
+      total_pct: Math.round(totalPct * 100) / 100,
+      avg_score: Math.round(avgScore * 1000) / 1000,
+      grade: gradeFor(avgScore),
+      pilares,
+      notas,
+    };
+    (byVendor[promotor] = byVendor[promotor] || []).push(coaching);
+    nOk++;
+  });
+
+  if(nOk === 0) throw new Error('No se reconoció ningún coaching completo en el archivo.');
+
+  const vendors = [];
+  Object.keys(byVendor).sort().forEach(name => {
+    const coachings = byVendor[name]; // ya en orden cronológico (orden del formulario)
+    coachings.forEach((c,i) => c.numero = i+1);
+    const supervisores = [...new Set(coachings.map(c => c.supervisor))].sort();
+    vendors.push({
+      nombre: name,
+      supervisores,
+      supervisor_actual: coachings[coachings.length-1].supervisor,
+      n_coachings: coachings.length,
+      ultimo_total: coachings[coachings.length-1].total_pct,
+      ultima_nota: coachings[coachings.length-1].grade,
+      primer_total: coachings[0].total_pct,
+      coachings,
+    });
+  });
+
+  return {
+    pilares_meta: PILARES_DEF.map(p => ({id:p.id, name:p.name, short:p.short})),
+    vendors,
+    generated_from: 'CSV importado manualmente',
+    n_registros: nOk,
   };
-
-  // Armar resumen visual
-  let summary = `<strong>Vendedor</strong><span>${datos.vendedor}</span>`;
-  summary += `<strong>Objetivo</strong><span>${datos.objetivo.toUpperCase()}</span>`;
-  if (state.objetivo === 'alta') {
-    summary += `<strong>Canal</strong><span>${(datos.canal || '—').toUpperCase()}</span>`;
-    summary += `<strong>Razón social</strong><span>${datos.razonsocial || '—'}</span>`;
-    summary += `<strong>Localidad</strong><span>${datos.localidad || '—'}</span>`;
-    summary += `<strong>Subcanal</strong><span>${datos.subcanal || '—'}</span>`;
-  }
-
-  // Mostrar pantalla de éxito inmediatamente
-  document.getElementById('summaryCard').innerHTML = summary;
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('successScreen').classList.add('show');
-  document.getElementById('progressFill').style.width = '100%';
-  window.scrollTo(0,0);
-
-  // Enviar a Google Sheets (si la URL está configurada)
-  if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== "PEGAR_URL_AQUI") {
-    fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos)
-    }).catch(err => console.warn("Error al enviar a Sheets:", err));
-  } else {
-    console.warn("⚠️ URL de Apps Script no configurada. Los datos no se guardaron en Sheets.");
-  }
 }
 
-function toggleOtroRS() {
-  const v = document.querySelector('input[name="rs_motivo"]:checked')?.value;
-  const wrap = document.getElementById('f_rs_otro_wrap');
-  if (wrap) wrap.style.display = v === 'otro' ? 'block' : 'none';
+function showToast(msg, isError){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => { t.className = 'toast'; }, 4200);
 }
 
-function resetForm() {
-  location.reload();
-}
+document.getElementById('btnUpdate').addEventListener('click', () => {
+  document.getElementById('csvFileInput').click();
+});
+
+document.getElementById('csvFileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try{
+      const rows = parseCSV(ev.target.result);
+      const newData = processCSVRows(rows);
+      const prevSelected = selectedVendor;
+      DATA.pilares_meta = newData.pilares_meta;
+      DATA.vendors = newData.vendors;
+      DATA.generated_from = newData.generated_from;
+      DATA.n_registros = newData.n_registros;
+      document.getElementById('coaching-data').textContent = JSON.stringify(DATA);
+
+      if(prevSelected && DATA.vendors.find(v => v.nombre === prevSelected)){
+        selectVendor(prevSelected);
+      } else {
+        selectedVendor = null;
+        document.getElementById('emptyState').style.display = '';
+        document.getElementById('detailView').style.display = 'none';
+        renderSidebar(document.getElementById('searchInput').value);
+      }
+      showToast(`Base actualizada: ${newData.n_registros} coachings · ${newData.vendors.length} promotores`);
+    } catch(err){
+      showToast('No se pudo procesar el archivo: ' + err.message, true);
+    }
+    document.getElementById('csvFileInput').value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+document.getElementById('btnDownload').addEventListener('click', () => {
+  const clone = document.documentElement.cloneNode(true);
+  // remove the transient toast node from the exported copy
+  const toastEl = clone.querySelector('#toast');
+  if(toastEl) toastEl.className = 'toast';
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `Coaching_Vendedores_${stamp}.html`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Descarga iniciada');
+});
+
 </script>
-</body>
-</html>
+
+
+</body></html>

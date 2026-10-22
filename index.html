@@ -457,31 +457,29 @@
           <option value="">— Seleccioná tu nombre —</option>
           <option>NO LO SÉ</option>
           <option>ACEVEDO MARIA EUGENIA</option>
-	<option>ALTAMIRANO BAHAMONDES TOMAS</option>
-	<option>ANTUAL PAULA</option>
-	<option>ARAVENA CRISTIAN ADRIÁN</option>
-	<option>CORSINO PEDRO</option>
-	<option>DALLEVA SALINAS ALEXIS</option>
-	<option>FIGUEROA JONATHAN</option>
-	<option>FLORENCIA SANTIAGO</option>
-	<option>GOMEZ RAUL ALEJANDRO</option>
-	<option>JUAN CARLOS VEGA</option>
-	<option>KEBERLEIN ARIANA</option>
-	<option>LEON ABRIL CANDELA</option>
-	<option>MARTIRE MAXIMILIANO</option>
-	<option>MARQUEZ JOAQUIN</option>
-	<option>MELINAO LUCAS</option>
-	<option>MILLAIN BETIANA</option>
-	<option>MORA MATIAS ARIEL</option>
-	<option>MORA MAURO</option>
-	<option>MORENO FERNANDO</option>
-	<option>MUÑOZ DAMIAN</option>
-	<option>NUÑEZ MAURO</option>
-	<option>ORLANDO JOSÉ REYES MORA</option>
-	<option>RODRIGO D´URSO PAEZ</option>
-	<option>SALINA LAUTARO</option>
-	<option>SECO ROBERTO ENRIQUE</option>
-	<option>VIQUEIRA MARTIN</option>
+          <option>ALTAMIRANO BAHAMONDES TOMAS</option>
+          <option>ALVAREZ TOMAS</option>
+          <option>ARAVENA CRISTIAN ADRIÁN</option>
+          <option>BOCEK MILENA</option>
+          <option>CORSINO PEDRO</option>
+          <option>DALLEVA SALINAS ALEXIS</option>
+          <option>FIGUEROA JONATHAN</option>
+          <option>GOMEZ RAUL ALEJANDRO</option>
+          <option>KEBERLEIN ARIANA</option>
+          <option>LEON ABRIL CANDELA</option>
+          <option>MARQUEZ JOAQUIN</option>
+          <option>MELINAO LUCAS</option>
+          <option>MILLAIN BETIANA</option>
+          <option>MORA MATIAS ARIEL</option>
+          <option>MORA MAURO</option>
+          <option>MORENO FERNANDO</option>
+          <option>MUÑOZ DAMIAN</option>
+          <option>NUÑEZ MAURO</option>
+          <option>OLEA LUCAS</option>
+          <option>RODRIGO D´URSO PAEZ</option>
+          <option>ROMANI JOAQUIN</option>
+          <option>SECO ROBERTO ENRIQUE</option>
+          <option>VIQUEIRA MARTIN</option>
         </select>
       </div>
       <div class="grid2">
@@ -1973,7 +1971,7 @@ document.addEventListener('change', function(e) {
 // ================================================================
 // CONFIGURACIÓN — PEGÁ TU URL DE APPS SCRIPT ACÁ
 // ================================================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYB_ZHQmjX-eVT3ozzTKIhbWYCjR6VnecYBqU9qjB9wWMHlRfYxv_iGQ7ba8m_Dxq-/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyS2CyVEfbX0Dd-z4kZHrePJ8b0wNMhpDPQYiO778dxjdgXD3OypIZuxUoMiYi-6a6e/exec";
 
 // ================================================================
 // SUBMIT
@@ -2034,25 +2032,62 @@ function submitForm() {
     summary += `<strong>Subcanal</strong><span>${datos.subcanal || '—'}</span>`;
   }
 
-  // Mostrar pantalla de éxito inmediatamente
-  document.getElementById('summaryCard').innerHTML = summary;
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('successScreen').classList.add('show');
-  document.getElementById('progressFill').style.width = '100%';
-  window.scrollTo(0,0);
+  datos.id = 'f' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
 
-  // Enviar a Google Sheets (si la URL está configurada)
-  if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== "PEGAR_URL_AQUI") {
-    fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos)
-    }).catch(err => console.warn("Error al enviar a Sheets:", err));
-  } else {
-    console.warn("⚠️ URL de Apps Script no configurada. Los datos no se guardaron en Sheets.");
-  }
+  // Guardar SIEMPRE en el celu antes de enviar (por si falla la señal)
+  const cola = leerCola();
+  cola.push(datos);
+  guardarCola(cola);
+
+  const btns = [...document.querySelectorAll('button[onclick="submitForm()"]')];
+  btns.forEach(b => { b.disabled = true; b.dataset.txt = b.textContent; b.textContent = 'Enviando...'; });
+
+  enviarPendientes().then(ok => {
+    btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.txt; });
+    if (!ok) {
+      alert('⚠️ No se pudo enviar (sin señal o sin conexión).\nTu respuesta quedó guardada en este celular. NO la cargues de nuevo: abrí el formulario con señal y se enviará sola.');
+      summary += `<strong>Estado</strong><span style="color:#c0392b">PENDIENTE DE ENVÍO (guardado en el celu)</span>`;
+    }
+    document.getElementById('summaryCard').innerHTML = summary;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('successScreen').classList.add('show');
+    document.getElementById('progressFill').style.width = '100%';
+    window.scrollTo(0,0);
+  });
 }
+
+// ---- Cola de envíos pendientes ----
+function leerCola() {
+  try { return JSON.parse(localStorage.getItem('galaxia_pendientes') || '[]'); } catch (e) { return []; }
+}
+function guardarCola(c) {
+  try { localStorage.setItem('galaxia_pendientes', JSON.stringify(c)); } catch (e) {}
+}
+async function enviarPendientes() {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === "PEGAR_URL_AQUI") return false;
+  let cola = leerCola();
+  let todoOk = true;
+  for (const d of [...cola]) {
+    try {
+      // text/plain evita el preflight; no-cors: si resuelve, el request llegó a Google
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(d)
+      });
+      cola = leerCola().filter(x => x.id !== d.id);
+      guardarCola(cola);
+    } catch (err) {
+      console.warn("Error al enviar a Sheets:", err);
+      todoOk = false;
+      break;
+    }
+  }
+  return todoOk;
+}
+window.addEventListener('online', enviarPendientes);
+window.addEventListener('load', () => { if (leerCola().length) enviarPendientes(); });
 
 function toggleOtroRS() {
   const v = document.querySelector('input[name="rs_motivo"]:checked')?.value;
